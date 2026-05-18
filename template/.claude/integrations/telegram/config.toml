@@ -1,0 +1,10 @@
+# Telegram integration — mobile capture bot fires tasks to this repo's sandbox.
+# Disabled by default. Enable via .claude/config.toml [integrations] telegram = true.
+
+[integration]
+enabled = false
+
+[integration.telegram]
+bot_token_env = "TELEGRAM_BOT_TOKEN"
+allowed_chat_ids = []
+webhook_url = ""

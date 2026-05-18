@@ -1,0 +1,12 @@
+# Savvy framework — project-level config
+# Toggle integrations on/off here. Each integration also has its own
+# config.toml under .claude/integrations/<name>/ with credentials/settings.
+
+[framework]
+version = "1.0"
+variant = "{{ variant }}"
+
+[integrations]
+notion = {{ include_notion_integration | lower }}
+telegram = {{ include_telegram_integration | lower }}
+ram = {{ include_ram_integration | lower }}

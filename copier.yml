@@ -1,0 +1,72 @@
+project_name:
+  type: str
+  help: "Project name (kebab-case)"
+
+project_description:
+  type: str
+  help: "One-line description"
+
+variant:
+  type: str
+  help: "Project type"
+  choices:
+    - software-dev
+    - data-science
+  default: software-dev
+
+llm:
+  type: str
+  help: "Primary AI coding agent (scaffolds the corresponding tooling directory)"
+  choices:
+    - claude
+    - codex
+    - gemini
+  default: claude
+
+github_username:
+  type: str
+  default: shaunchew
+
+include_notion_integration:
+  type: bool
+  default: false
+
+include_telegram_integration:
+  type: bool
+  default: false
+
+include_ram_integration:
+  type: bool
+  default: false
+
+_min_copier_version: "9.0"
+
+_subdirectory: template
+
+_templates_suffix: ""
+
+_answers_file: .copier-answers.yml
+
+_tasks:
+  - "git init -b main"
+  - "git add ."
+  - "git commit --author='Shaun <scwj1210@gmail.com>' -m 'Initial scaffold from savvy-template'"
+  - "{% if variant == 'data-science' %}pip install -e . --break-system-packages{% endif %}"
+  - "echo 'Template ready. Run \"savvy intake\" or open Claude Code to begin.'"
+
+# Migrations run on `copier update` when crossing a version boundary.
+# Per §14.1 of the plan, each major release authors a migration entry here:
+#   - version: "X.Y.Z"
+#     before: [ ... shell commands to run before files are updated ... ]
+#     after:  [ ... shell commands to run after files are updated ... ]
+# Keep migrations idempotent and additive so users on older template versions
+# can upgrade incrementally without manual intervention.
+_migrations: []
+
+_exclude:
+  - ".git"
+  - ".DS_Store"
+  - "__pycache__"
+  - "*.pyc"
+  - ".venv"
+  - "node_modules"

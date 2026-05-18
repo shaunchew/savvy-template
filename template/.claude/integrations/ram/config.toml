@@ -1,0 +1,11 @@
+# RAM (Remote AI Maestro) integration — RAM frontend exposes capture surface
+# that routes tasks to the correct repo sandbox.
+# Disabled by default. Enable via .claude/config.toml [integrations] ram = true.
+
+[integration]
+enabled = false
+
+[integration.ram]
+project_slug = "{{ project_name }}"
+ram_endpoint = ""
+ram_token_env = "RAM_TOKEN"

@@ -1,0 +1,9 @@
+# Notion integration — pushes spec/task state to a Notion database.
+# Disabled by default. Enable via .claude/config.toml [integrations] notion = true.
+
+[integration]
+enabled = false
+
+[integration.notion]
+database_id = ""
+sync_mode = "realtime"  # "realtime" (GitHub Action on commit) or "manual" (/sync-notion)
