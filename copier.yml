@@ -52,7 +52,7 @@ _tasks:
   - "git add ."
   - "git commit --author='Shaun <scwj1210@gmail.com>' -m 'Initial scaffold from savvy-template'"
   - "{% if variant == 'data-science' %}pip install -e . --break-system-packages{% endif %}"
-  - "echo 'Template ready. Run \"savvy intake\" or open Claude Code to begin.'"
+  - "echo 'Template ready. Open Claude Code (or codex/gemini) in this directory to begin. For existing projects, run /intake \"<one-line description>\" once the session starts.'"
 
 # Migrations run on `copier update` when crossing a version boundary.
 # Per §14.1 of the plan, each major release authors a migration entry here:

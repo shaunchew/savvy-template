@@ -9,3 +9,4 @@ __pycache__/
 dist/
 build/
 .copier-answers.yml
+HANDOVER.md

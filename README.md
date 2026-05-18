@@ -113,3 +113,14 @@ See [`docs/PLAN.md`](docs/PLAN.md) for the full specification.
 ## Status
 
 v1.0 — Ready to scaffold. See `docs/PLAN.md` §15 for the rollout plan.
+
+## Patching an existing scaffold
+
+For projects scaffolded from an older version, each release that needs a retroactive fix ships an idempotent script in [`migrations/`](migrations/). Apply one-liner:
+
+```bash
+cd <your-project>
+curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/main/migrations/<version>.sh | bash
+```
+
+See [`migrations/README.md`](migrations/README.md) for the catalogue and the contract these scripts follow.
