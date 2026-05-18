@@ -5,8 +5,27 @@ argument-hint: "<category>/<NNN>"
 
 # /ship
 
-Walk the spec's checklist item-by-item; on all-pass update CHANGELOG, move spec to shipped, tag release, trigger Notion sync if enabled. Invokes: release-gate.
+Run the release gate on a spec — walk its checklist, update CHANGELOG, mark the spec shipped, propose a tag, and finalize with a conventional commit.
 
-## Status
+## Procedure
 
-Stub — content to be filled in Phase 1 implementation. See `docs/PLAN.md` §7 for the full spec.
+1. Parse `$ARGUMENTS` as `<category>/<NNN>`. Resolve the spec folder by globbing `specs/<category>/<NNN>-*/`. Abort if zero or multiple matches.
+2. Invoke the `release-gate` skill with the resolved spec path. The skill will:
+   - Walk `checklist.md` item-by-item, requiring an explicit pass/fail for each.
+   - Stop on the first failure and report what blocks shipping.
+   - On all-pass, append an entry to `CHANGELOG.md` under `## [Unreleased]`, flip the spec's status frontmatter to `shipped`, propose a semver tag, and trigger `/sync-notion` if `[integrations] notion = true` in `.claude/config.toml`.
+3. On all-pass, draft a conventional-commit message (`feat:`, `fix:`, `chore:`, or `docs:` based on the spec category and contents) that references `<category>/<NNN>` and a one-line summary of what shipped.
+4. Show the proposed commit message to the user and confirm before running `git commit --author="Shaun <scwj1210@gmail.com>" -m "<message>"`.
+5. Remind the user to run `/curate` if `.claude/pending-changes.md` has unresolved entries.
+
+## Arguments
+
+- `$ARGUMENTS` — `<category>/<NNN>` (e.g. `product/003`).
+
+## Invokes
+
+- `release-gate` — receives the resolved spec path; returns pass/fail state and the proposed tag.
+
+## Output
+
+Updated `CHANGELOG.md`, spec frontmatter flipped to `shipped`, a new git commit, a proposed tag printed to console, and a Notion sync trigger when enabled.
