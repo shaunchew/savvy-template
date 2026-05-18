@@ -35,5 +35,12 @@ if ! command -v uv >/dev/null 2>&1; then
 fi
 
 # --- run copier --------------------------------------------------------------
+# When invoked via `curl | bash`, stdin is consumed by the pipe — copier would
+# have no way to read prompt answers. Redirect stdin from /dev/tty so the user
+# can answer prompts interactively. Falls back to inherited stdin if no tty.
 say "running: uvx copier copy $REPO $TARGET $*"
-exec uvx copier copy "$REPO" "$TARGET" "$@"
+if [ -t 0 ] || [ ! -e /dev/tty ]; then
+  exec uvx copier copy "$REPO" "$TARGET" "$@"
+else
+  exec uvx copier copy "$REPO" "$TARGET" "$@" < /dev/tty
+fi
