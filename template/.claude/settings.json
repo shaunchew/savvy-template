@@ -18,7 +18,12 @@
       }
     ],
     "Stop": [
-      { "type": "command", "command": ".claude/hooks/session-end.sh" }
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/session-end.sh" }
+        ]
+      }
     ]
   }
 }
