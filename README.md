@@ -6,12 +6,29 @@ This repo is a [Copier](https://copier.readthedocs.io/) template. It is consumed
 
 ## Quick start
 
-```bash
-# Recommended — via savvy CLI (see cli/savvy.zsh)
-savvy new my-project --llm claude --idea "one-line idea here"
+**One-liner** — scaffolds into the current directory (auto-installs `uv` if missing):
 
-# Or directly via Copier
-uvx copier copy gh:shaunchew/savvy-template my-project
+```bash
+curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/main/install.sh | bash
+```
+
+Into a new subdirectory:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/main/install.sh | bash -s -- my-project
+```
+
+If you already have `uv` installed:
+
+```bash
+uvx copier copy gh:shaunchew/savvy-template .          # current dir
+uvx copier copy gh:shaunchew/savvy-template my-project # new subdir
+```
+
+Or via the `savvy` CLI (after sourcing `cli/savvy.zsh` in your `~/.zshrc`):
+
+```bash
+savvy new my-project --llm claude --idea "one-line idea here"
 ```
 
 ## What you get
