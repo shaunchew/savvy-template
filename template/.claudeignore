@@ -1,0 +1,59 @@
+# Files Claude should not read or list.
+# Reduces token bloat from generated/vendored content and keeps secrets out of context.
+
+# Secrets — always
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets/
+credentials/
+
+# Python build artifacts
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+*.egg-info/
+build/
+dist/
+
+# Node build artifacts
+node_modules/
+.next/
+.nuxt/
+.svelte-kit/
+.turbo/
+.parcel-cache/
+out/
+
+# Rust / Go / Java build artifacts
+target/
+*.class
+*.jar
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Framework — archive directories Claude rarely needs in context
+_legacy/_archive/
+scratchpads/_archive/
+specs/_archive/
+
+# Large binary assets (uncomment per project)
+# *.png
+# *.jpg
+# *.pdf
+# *.mp4
