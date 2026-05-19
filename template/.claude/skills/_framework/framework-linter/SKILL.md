@@ -35,6 +35,7 @@ Run every check below; collect findings into three buckets: `error`, `warning`, 
 7. **Stale scratchpads.** For each `scratchpads/<name>/` (excluding `_archive/`):
    - mtime > 60 days = `warning`. Suggest `/promote-scratchpad <name>` or `/archive-scratchpad <name>`.
 8. **Pending changes overflow.** If `.claude/pending-changes.md` has > 50 entries, raise `warning`. Suggest `/curate`.
+9. **Rule decay.** Run `git blame` against `AGENTS.md`, `CLAUDE.md`, and `constitution.md`. For each non-blank, non-heading line whose last modification is older than 180 days, raise `info` with the line excerpt. The Claude Code blog recommends quarterly review of these files to remove rules that compensate for older model limitations; flag them as candidates for `/curate` re-evaluation. Skip when not a git repo.
 
 ## Output
 
