@@ -59,7 +59,7 @@ cd <project>
 claude   # or codex / gemini if you chose those at scaffold time
 ```
 
-For fresh projects, `savvy new` writes `.claude/intake-input.md` and the templated `CLAUDE.md` tells Claude to auto-run `/intake --from-file` on session start. For existing projects (Path B), kick off context-building manually:
+For fresh projects, `savvy new` writes `.claude/intake-input.md` and the `SessionStart` hook (`.claude/hooks/session-start.sh`) deterministically surfaces it so Claude runs `/intake --from-file` on session start. For existing projects (Path B), kick off context-building manually:
 
 ```
 /intake "<one-line description of what this project does and where it's headed>"
