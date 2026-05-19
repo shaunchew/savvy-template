@@ -10,3 +10,11 @@ dist/
 build/
 .copier-answers.yml
 HANDOVER.md
+
+# Plugin materialization output — see scripts/build-plugin.sh.
+# The manifest at .claude-plugin/plugin.json IS tracked; the mirrored
+# skills/commands/hooks/agents directories are generated.
+.claude-plugin/skills/
+.claude-plugin/commands/
+.claude-plugin/hooks/
+.claude-plugin/agents/

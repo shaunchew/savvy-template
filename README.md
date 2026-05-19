@@ -114,6 +114,20 @@ See [`docs/PLAN.md`](docs/PLAN.md) for the full specification.
 
 v1.0 — Ready to scaffold. See `docs/PLAN.md` §15 for the rollout plan.
 
+## Plugin install (alternative distribution)
+
+Beyond the Copier scaffold, the framework is also installable as a Claude Code plugin so its skills/commands/hooks/agents land in any repo without re-scaffolding.
+
+```bash
+# Build the plugin layout from template/.claude/ (run once per release).
+./scripts/build-plugin.sh
+
+# In any repo:
+/plugin install gh:shaunchew/savvy-template
+```
+
+Use Copier for new projects (gets you the full spec/docs/integrations structure). Use the plugin when you want the framework skills/commands in an existing repo without changing its file layout.
+
 ## Patching an existing scaffold
 
 For projects scaffolded from an older version, each release that needs a retroactive fix ships an idempotent script in [`migrations/`](migrations/). Apply one-liner:
