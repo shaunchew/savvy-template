@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-mcp.json",
+  "_comment": "Project-scoped MCP servers. Each entry below is disabled by default — uncomment and add credentials to enable. See .claude/integrations/_mcp-template/README.md.",
+  "mcpServers": {}
+}

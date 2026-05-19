@@ -7,3 +7,9 @@ enabled = false
 [integration.notion]
 database_id = ""
 sync_mode = "realtime"  # "realtime" (GitHub Action on commit) or "manual" (/sync-notion)
+
+# MCP mode — use the official Notion MCP server for live read/write during Claude sessions.
+# Pairs with the entry in .mcp.json. See ../_mcp-template/README.md for setup.
+[integration.mcp]
+enabled = false
+server_name = "notion"
