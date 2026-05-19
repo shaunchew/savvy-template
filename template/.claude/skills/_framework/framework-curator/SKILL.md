@@ -19,18 +19,19 @@ Gatekeeper for the three core context files (`AGENTS.md`, `CLAUDE.md`, `constitu
 2. Walk the placement decision tree in order; pick the FIRST matching branch:
    1. Enforceable by a linter or formatter -> reject; tell user the tool enforces it.
    2. Inferable from `package.json`, code, README, or tests -> reject as redundant.
-   3. Stack, command, or quirk Claude wouldn't guess -> route to `AGENTS.md` (deferred).
-   4. Claude-specific behavior (compaction, plan mode, hook interactions) -> route to `CLAUDE.md` (deferred).
-   5. Project-wide invariant or non-negotiable -> route to `constitution.md` (deferred).
-   6. Must happen every time -> route to a hook in `.claude/settings.json`.
-   7. Specialized workflow used sometimes -> route to a new skill in `.claude/skills/`.
-   8. Feature-specific -> route to that feature's `spec.md` / `plan.md` / `tasks.md`.
-   9. Current operational state (config, status) -> route to `docs/ops/`.
-   10. Historical decision -> route to `docs/decisions/` as an ADR.
-   11. Speculative or exploratory -> route to `scratchpads/<name>/`.
-   12. Reusable across projects -> route to `~/.claude/skills/`.
-   13. Anything else -> tell the user it probably doesn't need to exist.
-3. If branches 3-5 matched, BLOCK direct edits unless the invocation came from `/curate`. Instead append to `.claude/pending-changes.md`:
+   3. Stack, command, or quirk Claude wouldn't guess, AND only applies to one subdirectory subtree -> route to that subtree's `AGENTS.md` (apply directly; subdir AGENTS.md is NOT deferred). See `docs/agents-subdir-pattern.md`.
+   4. Stack, command, or quirk Claude wouldn't guess (project-wide) -> route to root `AGENTS.md` (deferred).
+   5. Claude-specific behavior (compaction, plan mode, hook interactions) -> route to `CLAUDE.md` (deferred).
+   6. Project-wide invariant or non-negotiable -> route to `constitution.md` (deferred).
+   7. Must happen every time -> route to a hook in `.claude/settings.json`.
+   8. Specialized workflow used sometimes -> route to a new skill in `.claude/skills/`.
+   9. Feature-specific -> route to that feature's `spec.md` / `plan.md` / `tasks.md`.
+   10. Current operational state (config, status) -> route to `docs/ops/`.
+   11. Historical decision -> route to `docs/decisions/` as an ADR.
+   12. Speculative or exploratory -> route to `scratchpads/<name>/`.
+   13. Reusable across projects -> route to `~/.claude/skills/`.
+   14. Anything else -> tell the user it probably doesn't need to exist.
+3. If branches 4-6 matched (root AGENTS.md / CLAUDE.md / constitution.md), BLOCK direct edits unless the invocation came from `/curate`. Instead append to `.claude/pending-changes.md`:
    ```
    ## YYYY-MM-DD HH:MM · <target-file> · <field>
    <content>
