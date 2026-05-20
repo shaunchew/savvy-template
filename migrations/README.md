@@ -36,6 +36,7 @@ bash /tmp/migrate.sh
 | Version | What it fixes |
 |---|---|
 | `v1.0.1.sh` | Wraps `.claude/settings.json` `Stop` hook in the `{matcher, hooks: [...]}` envelope. Fixes Claude Code's `hooks › Stop › 0 › hooks: Expected array, but received undefined` validation error. |
+| `v1.3.0.sh` | Removes orphaned flat `.claude/commands/*.md` files left behind after commands moved into the namespaced `.claude/commands/sf/*.md` (invoked as `/sf:<name>`). Run after `copier update`. |
 
 ## Authoring a new migration
 

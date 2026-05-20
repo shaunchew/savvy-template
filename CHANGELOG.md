@@ -6,11 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-05-20
+
 ### Added
 - `/sf:resume-handover` slash command — counterpart to `/sf:handover`: reads `HANDOVER.md`, active spec, and recent git state to bootstrap a new session. Flags stale handovers when the most recent commit is newer than the handover timestamp.
+- `migrations/v1.3.0.sh` — removes orphaned flat command files in existing projects after the namespacing move. Idempotent; keeps custom top-level commands with no `sf/` twin.
 
 ### Changed
 - **Namespaced all slash commands under `/sf:`.** Every command moved from `template/.claude/commands/*.md` into `template/.claude/commands/sf/*.md`. Invocation now uses the `/sf:` prefix (e.g. `/sf:spec`, `/sf:ship`, `/sf:handover`). All cross-references in skills, hooks, agents, docs, and the `/sf:commands` index updated.
+- `template/.claude/config.toml` version bumped to `1.3`.
 
 ## [1.2.0] — 2026-05-19
 
