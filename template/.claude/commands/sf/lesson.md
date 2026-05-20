@@ -3,7 +3,7 @@ description: Append a tagged lesson to .claude/lessons.md.
 argument-hint: "\"<text>\""
 ---
 
-# /lesson
+# /sf:lesson
 
 Record a one-line lesson into `.claude/lessons.md` via the lesson-recorder skill.
 

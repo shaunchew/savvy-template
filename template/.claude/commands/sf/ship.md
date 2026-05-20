@@ -3,7 +3,7 @@ description: Walk a spec's checklist; on all-pass update CHANGELOG, move spec to
 argument-hint: "<category>/<NNN>"
 ---
 
-# /ship
+# /sf:ship
 
 Run the release gate on a spec — walk its checklist, update CHANGELOG, mark the spec shipped, propose a tag, and finalize with a conventional commit.
 
@@ -13,10 +13,10 @@ Run the release gate on a spec — walk its checklist, update CHANGELOG, mark th
 2. Invoke the `release-gate` skill with the resolved spec path. The skill will:
    - Walk `checklist.md` item-by-item, requiring an explicit pass/fail for each.
    - Stop on the first failure and report what blocks shipping.
-   - On all-pass, append an entry to `CHANGELOG.md` under `## [Unreleased]`, flip the spec's status frontmatter to `shipped`, propose a semver tag, and trigger `/sync-notion` if `[integrations] notion = true` in `.claude/config.toml`.
+   - On all-pass, append an entry to `CHANGELOG.md` under `## [Unreleased]`, flip the spec's status frontmatter to `shipped`, propose a semver tag, and trigger `/sf:sync-notion` if `[integrations] notion = true` in `.claude/config.toml`.
 3. On all-pass, draft a conventional-commit message (`feat:`, `fix:`, `chore:`, or `docs:` based on the spec category and contents) that references `<category>/<NNN>` and a one-line summary of what shipped.
 4. Show the proposed commit message to the user and confirm before running `git commit --author="Shaun <scwj1210@gmail.com>" -m "<message>"`.
-5. Remind the user to run `/curate` if `.claude/pending-changes.md` has unresolved entries.
+5. Remind the user to run `/sf:curate` if `.claude/pending-changes.md` has unresolved entries.
 
 ## Arguments
 

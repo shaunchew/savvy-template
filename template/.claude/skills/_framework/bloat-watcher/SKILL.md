@@ -9,7 +9,7 @@ Monitors line counts on length-budgeted context files. Fires from the PostToolUs
 
 ## When to invoke
 
-- PostToolUse hook on `Edit` or `Write` whose path is one of: `AGENTS.md`, `CLAUDE.md`, `constitution.md`, `ROADMAP.md`, `HANDOVER.md`, `specs/**/spec.md`, `specs/**/plan.md`, `.claude/pending-changes.md`.
+- PostToolUse hook on `Edit` or `Write` whose path is one of: `AGENTS.md`, `CLAUDE.md`, `constitution.md`, `ROADMAP.md`, `HANDOVER.md`, `specs/**/sf:spec.md`, `specs/**/sf:plan.md`, `.claude/pending-changes.md`.
 
 ## Procedure
 
@@ -31,13 +31,13 @@ Monitors line counts on length-budgeted context files. Fires from the PostToolUs
    - Below soft target -> exit silently.
    - Between soft and hard -> emit a warning to Claude with the file path, current count, both thresholds, and concrete extraction candidates (see step 4).
    - At or above hard ceiling -> emit a STOP message: refuse further appends to this file until content is extracted. Block subsequent Edit/Write on this path within the same turn.
-   - `pending-changes.md` at 50+ entries -> warn and suggest `/curate`.
+   - `pending-changes.md` at 50+ entries -> warn and suggest `/sf:curate`.
 4. Extraction suggestions by file:
    - `AGENTS.md` -> move detail to `docs/` or a feature `spec.md`; collapse command lists by referencing a script.
    - `CLAUDE.md` -> move to `AGENTS.md` if it's project context rather than Claude behavior.
    - `constitution.md` -> extract specific decisions into `docs/decisions/<NNN>-<name>.md` as ADRs; keep only invariants.
    - `ROADMAP.md` -> archive shipped items to `CHANGELOG.md`.
-   - `HANDOVER.md` -> regenerate via `/handover`; it's meant to be rewritten, not appended to.
+   - `HANDOVER.md` -> regenerate via `/sf:handover`; it's meant to be rewritten, not appended to.
    - `spec.md` / `plan.md` -> split detail into `plan.md` / `tasks.md` respectively.
 5. Identify roughly which lines to extract by scanning for the longest section under the relevant heading, and reference its heading in the warning.
 

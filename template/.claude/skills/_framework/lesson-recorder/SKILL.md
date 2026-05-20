@@ -1,6 +1,6 @@
 ---
 name: lesson-recorder
-description: Triggered by /lesson "<text>" or the Stop hook prompt to append a tagged entry (placement, gotcha, pattern, mistake-avoided) to .claude/lessons.md.
+description: Triggered by /sf:lesson "<text>" or the Stop hook prompt to append a tagged entry (placement, gotcha, pattern, mistake-avoided) to .claude/lessons.md.
 ---
 
 # Lesson Recorder
@@ -9,7 +9,7 @@ Captures lessons learned during a session by appending a tagged entry to `.claud
 
 ## When to invoke
 
-- User runs `/lesson "<text>"`.
+- User runs `/sf:lesson "<text>"`.
 - The Stop hook prompts for a lesson at session end and the user provides one.
 
 ## Procedure

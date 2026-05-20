@@ -1,6 +1,6 @@
 ---
 name: legacy-reviewer
-description: Walks _legacy/<migration>/ items one-by-one offering Keep archived / Delete now / Restore; logs decisions to REVIEW-LOG.md. Initial pass via /legacy-review --initial-migration.
+description: Walks _legacy/<migration>/ items one-by-one offering Keep archived / Delete now / Restore; logs decisions to REVIEW-LOG.md. Initial pass via /sf:legacy-review --initial-migration.
 ---
 
 # Legacy Reviewer
@@ -9,9 +9,9 @@ Walks items in `_legacy/<migration-name>/` one at a time. Per-item options: Keep
 
 ## When to invoke
 
-- User runs `/legacy-review` (walk all pending items across migrations).
-- User runs `/legacy-review <migration-folder>` (single migration).
-- User runs `/legacy-review --initial-migration` (first-time framework adoption on an existing repo).
+- User runs `/sf:legacy-review` (walk all pending items across migrations).
+- User runs `/sf:legacy-review <migration-folder>` (single migration).
+- User runs `/sf:legacy-review --initial-migration` (first-time framework adoption on an existing repo).
 - `framework-linter` warns about a `_legacy/<migration>/` folder older than 90 days.
 
 ## Procedure
@@ -35,7 +35,7 @@ Walks items in `_legacy/<migration-name>/` one at a time. Per-item options: Keep
 3. Present each group to the user with proposed archive action. Do NOT move anything yet.
 4. Once the user approves, bulk-move approved items to `_legacy/initial-migration-YYYY-MM-DD/` preserving relative paths.
 5. Generate `_legacy/initial-migration-YYYY-MM-DD/MIGRATION_NOTES.md` summarizing what got archived and why, using the format in PLAN §5.9.
-6. Create an empty `REVIEW-LOG.md` in the same folder. Tell the user to run `/legacy-review <that-folder>` later for item-by-item decisions.
+6. Create an empty `REVIEW-LOG.md` in the same folder. Tell the user to run `/sf:legacy-review <that-folder>` later for item-by-item decisions.
 
 ## Output
 

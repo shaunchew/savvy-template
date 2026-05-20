@@ -2,7 +2,7 @@
 description: Rebuild ROADMAP.md index from specs/ folder contents; 150-line cap.
 ---
 
-# /refresh-roadmap
+# /sf:refresh-roadmap
 
 Rebuild `ROADMAP.md` from scratch by scanning every spec folder.
 

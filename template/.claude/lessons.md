@@ -1,6 +1,6 @@
 # Lessons
 
-Chronological append-only log of tagged lessons. Use `/lesson "<text>"` or accept the Stop-hook prompt.
+Chronological append-only log of tagged lessons. Use `/sf:lesson "<text>"` or accept the Stop-hook prompt.
 
 Tags: `placement`, `gotcha`, `pattern`, `mistake-avoided`.
 

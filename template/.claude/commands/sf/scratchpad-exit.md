@@ -2,7 +2,7 @@
 description: Exit the current scratchpad back to normal project mode.
 ---
 
-# /scratchpad-exit
+# /sf:scratchpad-exit
 
 Leave scratchpad mode. Framework machinery (curator, bloat-watcher, spec-bootstrap, project-evolve) becomes active again. Scratchpad content is preserved for future return.
 
@@ -15,7 +15,7 @@ Leave scratchpad mode. Framework machinery (curator, bloat-watcher, spec-bootstr
    ```
    Exited <NNN>-<name>. Wrote: SCRATCHPAD.md, notes.md, findings.md, generated/api-probe.py.
    ```
-5. Do **not** create a git commit. Do not update `ROADMAP.md`, `CHANGELOG.md`, or `HANDOVER.md`. The user controls when (or whether) to promote via `/promote-scratchpad`.
+5. Do **not** create a git commit. Do not update `ROADMAP.md`, `CHANGELOG.md`, or `HANDOVER.md`. The user controls when (or whether) to promote via `/sf:promote-scratchpad`.
 
 ## Invokes
 

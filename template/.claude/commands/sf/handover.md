@@ -2,7 +2,7 @@
 description: Regenerate HANDOVER.md from current state (goal, files in flight, what failed, next step, pending changes count); 50-line cap.
 ---
 
-# /handover
+# /sf:handover
 
 Regenerate `HANDOVER.md` from scratch as a session bridge. Never append — always overwrite.
 
@@ -19,7 +19,7 @@ Regenerate `HANDOVER.md` from scratch as a session bridge. Never append — alwa
    - `## Files in flight` — paths from `git status` with a one-line `what's being changed` per entry.
    - `## What's been tried that didn't work` — pull from recent reverted commits or session notes if available; leave empty if nothing fits.
    - `## Next step` — exactly one concrete action.
-   - `## Pending changes awaiting /curate` — `<count> entries in .claude/pending-changes.md`.
+   - `## Pending changes awaiting /sf:curate` — `<count> entries in .claude/pending-changes.md`.
 5. Overwrite `HANDOVER.md`. Enforce a hard ceiling of 50 lines — if the draft exceeds it, trim from `## Files in flight` and `## What's been tried` first.
 6. Print the new line count and confirm the write.
 

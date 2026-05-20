@@ -2,7 +2,7 @@
 description: Manually push current spec/task state to Notion; no-op when [integration.notion] enabled = false.
 ---
 
-# /sync-notion
+# /sf:sync-notion
 
 Push current spec/task state to Notion. No-op when the Notion integration is disabled.
 

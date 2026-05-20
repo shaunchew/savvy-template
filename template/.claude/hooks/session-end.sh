@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 IFS=$'\n\t'
-# session-end.sh — surfaces /handover, pending-changes, and /lesson reminders. Stop hook.
+# session-end.sh — surfaces /sf:handover, pending-changes, and /sf:lesson reminders. Stop hook.
 
 # jq not strictly required (we don't parse stdin), but honor the graceful-degrade convention.
 # Drain stdin so the caller doesn't block on a pipe.
@@ -34,10 +34,10 @@ if [ -f "$handover" ]; then
   now="$(date +%s)"
   age=$(( now - mtime ))
   if [ "$age" -gt 3600 ]; then
-    printf 'session-end.sh: HANDOVER.md not updated this session. Consider /handover.\n' >&2
+    printf 'session-end.sh: HANDOVER.md not updated this session. Consider /sf:handover.\n' >&2
   fi
 else
-  printf 'session-end.sh: no HANDOVER.md found. Consider /handover.\n' >&2
+  printf 'session-end.sh: no HANDOVER.md found. Consider /sf:handover.\n' >&2
 fi
 
 # 2. pending-changes.md entry count.
@@ -46,19 +46,19 @@ if [ -f "$pending" ]; then
   entries="$(grep -c '^> \*\*20' "$pending" 2>/dev/null || true)"
   entries="${entries:-0}"
   if [ "$entries" -gt 0 ]; then
-    printf 'session-end.sh: %s pending change(s) awaiting /curate.\n' "$entries" >&2
+    printf 'session-end.sh: %s pending change(s) awaiting /sf:curate.\n' "$entries" >&2
   fi
 fi
 
-# 3. /lesson reminder: scan lessons.md for today's date heading.
+# 3. /sf:lesson reminder: scan lessons.md for today's date heading.
 lessons="$root/.claude/lessons.md"
 today="$(date +%Y-%m-%d)"
 if [ -f "$lessons" ]; then
   if ! grep -E "^## ${today}" "$lessons" >/dev/null 2>&1; then
-    printf 'session-end.sh: no lesson recorded today. Consider /lesson "...".\n' >&2
+    printf 'session-end.sh: no lesson recorded today. Consider /sf:lesson "...".\n' >&2
   fi
 else
-  printf 'session-end.sh: no lesson recorded today. Consider /lesson "...".\n' >&2
+  printf 'session-end.sh: no lesson recorded today. Consider /sf:lesson "...".\n' >&2
 fi
 
 exit 0

@@ -46,23 +46,23 @@ Notes for existing projects:
 
 - Don't use `savvy new` for this — it always creates a new subdirectory.
 - If you already have `README.md`, `AGENTS.md`, `CHANGELOG.md`, etc., Copier will prompt per file. Choose carefully.
-- Two migration variants are supported. **Variant A (passive coexistence)** is the default — new structure lands alongside old files; legacy ages out naturally. **Variant B (active archival)** sweeps non-conforming files into `_legacy/initial-migration-<date>/` for triage; run `/legacy-review --initial-migration` inside Claude Code after the scaffold. See `docs/PLAN.md` §12.
+- Two migration variants are supported. **Variant A (passive coexistence)** is the default — new structure lands alongside old files; legacy ages out naturally. **Variant B (active archival)** sweeps non-conforming files into `_legacy/initial-migration-<date>/` for triage; run `/sf:legacy-review --initial-migration` inside Claude Code after the scaffold. See `docs/PLAN.md` §12.
 
 ### Do I need an LLM CLI session?
 
 **Not for scaffolding.** The `copier copy` step is pure file generation — no LLM required.
 
-**Yes for everything after.** The framework is exercised inside a Claude Code (or Codex / Gemini) session: slash commands like `/spec`, `/plan`, `/ship`, `/intake`, `/curate` only work there. After scaffolding:
+**Yes for everything after.** The framework is exercised inside a Claude Code (or Codex / Gemini) session: slash commands like `/sf:spec`, `/sf:plan`, `/sf:ship`, `/sf:intake`, `/sf:curate` only work there. After scaffolding:
 
 ```bash
 cd <project>
 claude   # or codex / gemini if you chose those at scaffold time
 ```
 
-For fresh projects, `savvy new` writes `.claude/intake-input.md` and the `SessionStart` hook (`.claude/hooks/session-start.sh`) deterministically surfaces it so Claude runs `/intake --from-file` on session start. For existing projects (Path B), kick off context-building manually:
+For fresh projects, `savvy new` writes `.claude/intake-input.md` and the `SessionStart` hook (`.claude/hooks/session-start.sh`) deterministically surfaces it so Claude runs `/sf:intake --from-file` on session start. For existing projects (Path B), kick off context-building manually:
 
 ```
-/intake "<one-line description of what this project does and where it's headed>"
+/sf:intake "<one-line description of what this project does and where it's headed>"
 ```
 
 That walks the 5-batch bootstrap (core files → specs → ADRs → subagents → integrations), with per-batch approval.
@@ -85,7 +85,7 @@ savvy new my-project --llm claude --idea "one-line idea here"
 - **Spec-driven development.** constitution → spec → plan → tasks → implement.
 - **Agent-portable.** `AGENTS.md` canonical; `CLAUDE.md` slim overlay.
 - **10 universal framework skills** that police the framework itself in every project.
-- **23 slash commands** for the daily workflow (`/spec`, `/plan`, `/ship`, `/handover`, `/curate`, …).
+- **27 slash commands** under the `/sf:` namespace for the daily workflow (`/sf:spec`, `/sf:plan`, `/sf:ship`, `/sf:handover`, `/sf:resume-handover`, `/sf:curate`, …).
 - **Opt-in integrations** for Notion, Telegram, and RAM. Disabled by default.
 - **Updates propagate** via `copier update`.
 

@@ -3,7 +3,7 @@ description: Archive a scratchpad without promoting it (move to scratchpads/_arc
 argument-hint: "<NNN>-<name>"
 ---
 
-# /archive-scratchpad
+# /sf:archive-scratchpad
 
 Archive a scratchpad without promoting anything from it. Used when an exploration ended in "not worth pursuing" but the record is worth keeping.
 

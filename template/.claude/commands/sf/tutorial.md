@@ -3,7 +3,7 @@ description: Interactive walkthrough of the savvy framework — pick a scenario 
 argument-hint: "[scenario]"
 ---
 
-# /tutorial
+# /sf:tutorial
 
 Guided walkthroughs of the most common framework flows. Use this when onboarding to the framework or when you want to remember how a specific lifecycle works end-to-end.
 
@@ -33,59 +33,59 @@ Guided walkthroughs of the most common framework flows. Use this when onboarding
 
 ### fresh-project
 
-1. **What:** Verify the scaffold is healthy. **Run:** `/lint-framework`. **Watch for:** any reported drift or missing files.
+1. **What:** Verify the scaffold is healthy. **Run:** `/sf:lint-framework`. **Watch for:** any reported drift or missing files.
 2. **What:** If `.claude/intake-input.md` exists, intake should auto-run on session start. **Run:** confirm `CLAUDE.md` has the auto-intake line. **Watch for:** a five-batch flow starting — core files, specs, ADRs, subagents, integrations.
-3. **What:** If auto-intake didn't fire, kick it off. **Run:** `/intake "<one-line description of the project>"`. **Watch for:** approval prompts between batches; one commit per batch.
-4. **What:** Add your first spec. **Run:** `/spec product/<feature-name>`. **Watch for:** four files created in `specs/product/001-.../` and a ROADMAP update.
-5. **What:** Record any onboarding gotchas. **Run:** `/lesson "[placement] <what you learned>"`.
+3. **What:** If auto-intake didn't fire, kick it off. **Run:** `/sf:intake "<one-line description of the project>"`. **Watch for:** approval prompts between batches; one commit per batch.
+4. **What:** Add your first spec. **Run:** `/sf:spec product/<feature-name>`. **Watch for:** four files created in `specs/product/001-.../` and a ROADMAP update.
+5. **What:** Record any onboarding gotchas. **Run:** `/sf:lesson "[placement] <what you learned>"`.
 
 ### existing-project
 
 1. **What:** Confirm scaffold landed cleanly. **Run:** `ls -la .claude/ specs/ docs/`. **Watch for:** all directories present; no merge conflict markers in any framework file.
 2. **What:** Decide on migration variant. **Run:** read `docs/PLAN.md` §12 if unsure. Variant A = passive coexistence (just leave old files); Variant B = active archival into `_legacy/`.
-3. **What:** If Variant B, sweep non-conforming files. **Run:** `/legacy-review --initial-migration`. **Watch for:** per-item Keep/Delete/Restore prompts; a `_legacy/initial-migration-<date>/` folder appears.
-4. **What:** Bootstrap context from the existing codebase. **Run:** `/intake "<what this project already does + where it's headed>"`. **Watch for:** the intake skill will read the existing code and propose AGENTS.md / specs / ADRs that match reality.
-5. **What:** Sanity check. **Run:** `/lint-framework` then `/handover`.
+3. **What:** If Variant B, sweep non-conforming files. **Run:** `/sf:legacy-review --initial-migration`. **Watch for:** per-item Keep/Delete/Restore prompts; a `_legacy/initial-migration-<date>/` folder appears.
+4. **What:** Bootstrap context from the existing codebase. **Run:** `/sf:intake "<what this project already does + where it's headed>"`. **Watch for:** the intake skill will read the existing code and propose AGENTS.md / specs / ADRs that match reality.
+5. **What:** Sanity check. **Run:** `/sf:lint-framework` then `/sf:handover`.
 
 ### spec-lifecycle
 
-1. **Create.** `/spec <category>/<name>` → creates `specs/<category>/NNN-<name>/{spec,plan,tasks,checklist}.md`.
-2. **Plan.** `/plan <category>/NNN` → fills `plan.md` (approach, files, sequencing, risks).
-3. **Tasks.** `/tasks <category>/NNN` → derives a checkbox task list from plan.
+1. **Create.** `/sf:spec <category>/<name>` → creates `specs/<category>/NNN-<name>/{spec,plan,tasks,checklist}.md`.
+2. **Plan.** `/sf:plan <category>/NNN` → fills `plan.md` (approach, files, sequencing, risks).
+3. **Tasks.** `/sf:tasks <category>/NNN` → derives a checkbox task list from plan.
 4. **Implement.** Work the tasks. Mark `- [x]` as you complete each. Commit per task or per logical group using conventional commits (`feat(<category>/NNN): ...`).
-5. **Revise mid-flight.** `/spec-revise <category>/NNN` for any scope or approach change.
-6. **Ship.** `/ship <category>/NNN` → walks checklist, updates CHANGELOG, marks spec shipped, proposes a tag.
-7. **Lessons.** `/lesson "[pattern] <what worked>"` for anything reusable.
+5. **Revise mid-flight.** `/sf:spec-revise <category>/NNN` for any scope or approach change.
+6. **Ship.** `/sf:ship <category>/NNN` → walks checklist, updates CHANGELOG, marks spec shipped, proposes a tag.
+7. **Lessons.** `/sf:lesson "[pattern] <what worked>"` for anything reusable.
 
 ### curation
 
 1. **Inspect.** `cat .claude/pending-changes.md` — see queued additions to AGENTS.md / CLAUDE.md / constitution / integration configs.
-2. **Curate.** `/curate` → walk each entry: Apply / Reject / Defer.
+2. **Curate.** `/sf:curate` → walk each entry: Apply / Reject / Defer.
 3. **Cleanup.** After curate, `pending-changes.md` should read `_(0 entries)_`.
-4. **Audit.** `/lint-framework` to verify no rule violations or budget breaches remain.
+4. **Audit.** `/sf:lint-framework` to verify no rule violations or budget breaches remain.
 
 ### scratchpad
 
-1. **Enter.** `/scratchpad <name>` → creates `scratchpads/NNN-<name>/`. Framework curator/bloat-watcher/spec-bootstrap/project-evolve go inert.
+1. **Enter.** `/sf:scratchpad <name>` → creates `scratchpads/NNN-<name>/`. Framework curator/bloat-watcher/spec-bootstrap/project-evolve go inert.
 2. **Explore.** Write freely in `SCRATCHPAD.md`, `notes.md`, `findings.md`, `generated/`. No ROADMAP / CHANGELOG / HANDOVER side-effects.
-3. **Lessons still work.** `/lesson "..."` writes to `.claude/lessons.md` as normal.
-4. **Decide outcome.** Either `/promote-scratchpad <NNN>-<name>` (turn findings into a real spec/ADR, archive the scratchpad) or `/archive-scratchpad <NNN>-<name>` (no promotion, just file away).
-5. **Exit.** `/scratchpad-exit` returns to normal mode.
+3. **Lessons still work.** `/sf:lesson "..."` writes to `.claude/lessons.md` as normal.
+4. **Decide outcome.** Either `/sf:promote-scratchpad <NNN>-<name>` (turn findings into a real spec/ADR, archive the scratchpad) or `/sf:archive-scratchpad <NNN>-<name>` (no promotion, just file away).
+5. **Exit.** `/sf:scratchpad-exit` returns to normal mode.
 
 ### release
 
-1. **Open the gate.** `/ship <category>/NNN`. The release-gate skill walks the spec's `checklist.md` item-by-item.
+1. **Open the gate.** `/sf:ship <category>/NNN`. The release-gate skill walks the spec's `checklist.md` item-by-item.
 2. **Per item:** answer y / n / skip. Any `n` halts the release; fix and re-run.
 3. **On all-pass:** the skill updates CHANGELOG `[Unreleased]` → `[X.Y.Z] — <date>`, marks the spec `status: shipped`, refreshes ROADMAP, proposes a SemVer tag.
-4. **If Notion enabled:** the skill triggers `/sync-notion` to mark Notion rows complete.
+4. **If Notion enabled:** the skill triggers `/sf:sync-notion` to mark Notion rows complete.
 5. **Tag and push:** confirm the SemVer bump, then `git tag vX.Y.Z && git push --tags`.
 
 ### legacy-migration
 
-1. **Run the initial sweep.** `/legacy-review --initial-migration` from project root.
+1. **Run the initial sweep.** `/sf:legacy-review --initial-migration` from project root.
 2. **Per item:** Keep archived / Delete / Restore. Restored files move back to their suggested active location.
 3. **Read the audit.** Check `_legacy/initial-migration-<date>/MIGRATION_NOTES.md` for the summary.
-4. **Periodic walk.** `/legacy-review` again later to triage any items left unresolved.
+4. **Periodic walk.** `/sf:legacy-review` again later to triage any items left unresolved.
 5. **Don't let it stagnate.** Framework-linter warns if `_legacy/` folders go >90 days without being fully reviewed.
 
 ## Arguments

@@ -1,15 +1,15 @@
 ---
 name: spec-bootstrap
-description: Triggered by /spec <category>/<name> to auto-number, scaffold spec.md/plan.md/tasks.md/checklist.md with prefilled frontmatter, and append the new spec to ROADMAP.md.
+description: Triggered by /sf:spec <category>/<name> to auto-number, scaffold spec.md/plan.md/tasks.md/checklist.md with prefilled frontmatter, and append the new spec to ROADMAP.md.
 ---
 
 # Spec Bootstrap
 
-Scaffolds a new spec folder with the four required files and registers it in `ROADMAP.md`. Triggered by `/spec <category>/<name>`.
+Scaffolds a new spec folder with the four required files and registers it in `ROADMAP.md`. Triggered by `/sf:spec <category>/<name>`.
 
 ## When to invoke
 
-- User runs `/spec <category>/<name>`.
+- User runs `/sf:spec <category>/<name>`.
 - `project-intake` or `project-evolve` proposes a new spec and the user approves.
 
 ## Procedure
@@ -46,6 +46,6 @@ Scaffolds a new spec folder with the four required files and registers it in `RO
 ## Failure modes
 
 - Invalid category: refuse and list the four allowed values.
-- Folder already exists at the computed path: abort without writing; suggest `/spec-revise <ref>`.
+- Folder already exists at the computed path: abort without writing; suggest `/sf:spec-revise <ref>`.
 - `ROADMAP.md` missing: write a new minimal `ROADMAP.md` with `## Active` and the category heading, then append.
 - Name resolves to empty after kebab-casing: refuse and ask for a non-empty name.

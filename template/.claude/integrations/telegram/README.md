@@ -8,7 +8,7 @@ anywhere via Telegram.
 - Runs as a standalone deployment under `bot/` (not part of this repo's runtime).
 - Accepts text messages and image attachments from approved chats.
 - Forwards captured tasks to the repo sandbox over the configured webhook.
-- A message containing `/spec product/003` auto-tags the task against that spec.
+- A message containing `/sf:spec product/003` auto-tags the task against that spec.
 
 ## Enabling
 

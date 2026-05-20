@@ -2,7 +2,7 @@
 description: Review .claude/pending-changes.md and apply approved additions to AGENTS.md, CLAUDE.md, constitution.md, and integration configs.
 ---
 
-# /curate
+# /sf:curate
 
 Walk every entry in `.claude/pending-changes.md` and apply, reject, or defer each one. Rewrite the file when done.
 
@@ -12,7 +12,7 @@ Walk every entry in `.claude/pending-changes.md` and apply, reject, or defer eac
 2. Parse entries by their `## YYYY-MM-DD HH:MM · <target-file> · <field>` headings. For each entry, present to the user:
    - Target file (AGENTS.md / CLAUDE.md / constitution.md / integration config).
    - Proposed content block.
-   - Source (which `/evolve` invocation and which spec, if recorded).
+   - Source (which `/sf:evolve` invocation and which spec, if recorded).
 3. Offer three options per entry:
    - **Apply** — invoke the `framework-curator` skill with `(target_file, proposed_content)`. The skill validates placement against the decision tree (§5.10) and performs the actual edit. On success, mark the entry resolved.
    - **Reject** — ask the user for a one-line rationale. If they provide one, append it to `.claude/lessons.md` tagged `[mistake-avoided]` via the `lesson-recorder` skill. Mark the entry resolved.

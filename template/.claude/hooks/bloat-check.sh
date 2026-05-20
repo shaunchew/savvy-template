@@ -26,15 +26,15 @@ case "$file_path" in
     entries="$(grep -c '^> \*\*20' "$file_path" 2>/dev/null || true)"
     entries="${entries:-0}"
     if [ "$entries" -ge 50 ]; then
-      printf 'bloat-check.sh: pending-changes.md at %s entries. Run /curate.\n' "$entries" >&2
+      printf 'bloat-check.sh: pending-changes.md at %s entries. Run /sf:curate.\n' "$entries" >&2
     fi
     exit 0
     ;;
-  *specs/*/*/spec.md)
+  *specs/*/*/sf:spec.md)
     soft=100; hard=200
     suggestion="shrink to <=200 lines; move detail to plan.md"
     ;;
-  *specs/*/*/plan.md)
+  *specs/*/*/sf:plan.md)
     soft=150; hard=300
     suggestion="split into phase docs under specs/<id>/phases/"
     ;;

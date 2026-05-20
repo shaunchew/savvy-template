@@ -3,7 +3,7 @@ description: Enter a scratchpad workspace at scratchpads/<NNN>-<name>/; framewor
 argument-hint: "<name>"
 ---
 
-# /scratchpad
+# /sf:scratchpad
 
 Create or enter an isolated exploration workspace under `scratchpads/<NNN>-<name>/`. Inside it, framework machinery (curator, bloat-watcher, spec-bootstrap, project-evolve) is inert.
 
@@ -20,7 +20,7 @@ Create or enter an isolated exploration workspace under `scratchpads/<NNN>-<name
    Inert here: framework-curator, bloat-watcher, spec-bootstrap, project-evolve.
    Read-only: AGENTS.md, specs/, docs/, CHANGELOG.md, ROADMAP.md, HANDOVER.md.
    Writable: scratchpads/<NNN>-<name>/ only.
-   Exit with /scratchpad-exit. Promote with /promote-scratchpad <NNN>-<name>.
+   Exit with /sf:scratchpad-exit. Promote with /sf:promote-scratchpad <NNN>-<name>.
    ```
 7. Ask: "What are you exploring?" so the user can seed `SCRATCHPAD.md` topic.
 

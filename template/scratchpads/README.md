@@ -16,5 +16,5 @@ This keeps exploration cheap. Treat scratchpads as drafts: messy is fine.
 
 ## Promoting and archiving
 
-- `/promote-scratchpad` — convert findings into real `specs/` entries, ADRs under `docs/decisions/`, or runbooks. Use this once an exploration has produced something worth keeping.
-- `/archive-scratchpad` — move a finished or abandoned scratchpad into `scratchpads/_archive/` to preserve history without cluttering the active list.
+- `/sf:promote-scratchpad` — convert findings into real `specs/` entries, ADRs under `docs/decisions/`, or runbooks. Use this once an exploration has produced something worth keeping.
+- `/sf:archive-scratchpad` — move a finished or abandoned scratchpad into `scratchpads/_archive/` to preserve history without cluttering the active list.

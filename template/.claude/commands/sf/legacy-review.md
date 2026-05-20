@@ -3,7 +3,7 @@ description: Walk _legacy/<migration>/ items deciding Keep/Delete/Restore; --ini
 argument-hint: "[--initial-migration]"
 ---
 
-# /legacy-review
+# /sf:legacy-review
 
 Run the legacy-reviewer walkthrough across `_legacy/` folders. With `--initial-migration`, scans the working tree for files that don't fit the new structure and proposes archival.
 

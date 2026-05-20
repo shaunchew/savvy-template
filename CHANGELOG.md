@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+- `/sf:resume-handover` slash command — counterpart to `/sf:handover`: reads `HANDOVER.md`, active spec, and recent git state to bootstrap a new session. Flags stale handovers when the most recent commit is newer than the handover timestamp.
+
+### Changed
+- **Namespaced all slash commands under `/sf:`.** Every command moved from `template/.claude/commands/*.md` into `template/.claude/commands/sf/*.md`. Invocation now uses the `/sf:` prefix (e.g. `/sf:spec`, `/sf:ship`, `/sf:handover`). All cross-references in skills, hooks, agents, docs, and the `/sf:commands` index updated.
+
 ## [1.2.0] — 2026-05-19
 
 Gap-closing pass against the Claude Code large-codebase best practices blog post. All seven priority gaps from the v1.1 assessment closed.
@@ -15,11 +21,11 @@ Gap-closing pass against the Claude Code large-codebase best practices blog post
 - `permissions.deny` block in `template/.claude/settings.json` — blast-radius guards (rm -rf on root/HOME/.git/.claude, force-push, hard reset to origin, sudo, secret-file reads).
 - `SessionStart` hook (`template/.claude/hooks/session-start.sh`) — deterministic intake-input detection, framework version banner, pending-changes count, scratchpad-mode by CWD. Replaces model-driven CLAUDE.md instruction.
 - MCP integration scaffold: project-scoped `.mcp.json` at template root, `_mcp-template/` reference, Notion MCP as Mode A (recommended) alongside the existing GitHub Action sync as Mode B.
-- Three canonical subagents in `template/.claude/agents/`: `explorer` (read-only mapping), `code-reviewer` (independent pre-`/ship` review), `parallel-runner` (isolated parallel work).
+- Three canonical subagents in `template/.claude/agents/`: `explorer` (read-only mapping), `code-reviewer` (independent pre-`/sf:ship` review), `parallel-runner` (isolated parallel work).
 - Subdirectory `AGENTS.md` pattern doc at `template/docs/agents-subdir-pattern.md` + `framework-curator` decision-tree branch (subdir AGENTS.md applied directly, not deferred).
 - Plugin distribution path: `.claude-plugin/plugin.json` manifest at framework root + `scripts/build-plugin.sh` to materialize the plugin layout from `template/.claude/`.
-- `/review` slash command — delegates to the `code-reviewer` subagent with diff + spec context + constitution.
-- Rule-decay check in `framework-linter` — flags AGENTS.md / CLAUDE.md / constitution.md lines unchanged > 180 days as candidates for `/curate` re-evaluation.
+- `/sf:review` slash command — delegates to the `code-reviewer` subagent with diff + spec context + constitution.
+- Rule-decay check in `framework-linter` — flags AGENTS.md / CLAUDE.md / constitution.md lines unchanged > 180 days as candidates for `/sf:curate` re-evaluation.
 
 ### Changed
 - `template/.claude/config.toml` version bumped to `1.1`.
@@ -29,7 +35,7 @@ Gap-closing pass against the Claude Code large-codebase best practices blog post
 ## [1.1.0]
 
 ### Added
-- `/commands` and `/tutorial` slash commands.
+- `/sf:commands` and `/sf:tutorial` slash commands.
 - `migrations/` infrastructure for patching existing scaffolds.
 
 ### Fixed

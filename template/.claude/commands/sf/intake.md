@@ -3,7 +3,7 @@ description: One-shot project bootstrap from an idea — 5-batch flow (core file
 argument-hint: "\"<idea>\" | --from-file <path>"
 ---
 
-# /intake
+# /sf:intake
 
 One-shot project bootstrap from an idea description. Runs the 5-batch flow with per-batch approval.
 
@@ -21,7 +21,7 @@ One-shot project bootstrap from an idea description. Runs the 5-batch flow with 
    - Batch 4 — Subagents under `.claude/agents/`.
    - Batch 5 — Integration recommendations (with credential prompts).
 3. After the skill returns from Batch 1's commit, if the idea came from `.claude/intake-input.md`, delete that file so it isn't re-detected on the next session start.
-4. On full completion, print a summary of what was created and suggest the next moves: `/lint-framework` to verify, then `/plan <first-spec>` to start work.
+4. On full completion, print a summary of what was created and suggest the next moves: `/sf:lint-framework` to verify, then `/sf:plan <first-spec>` to start work.
 
 ## Arguments
 

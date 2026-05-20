@@ -54,13 +54,13 @@ A standard structure, workflow, and tooling layer for AI-assisted software devel
 
 **The framework polices itself.** Universal skills shipped with every project actively prevent drift, bloat, and misplacement of content.
 
-**Speculative changes apply immediately; ground-truth changes defer until sign-off.** Specs/plans/tasks/ADRs evolve freely. AGENTS.md/CLAUDE.md/constitution.md changes are batched in `.claude/pending-changes.md` and applied only at deliberate review moments via `/curate`. This separates exploratory work from canonical updates.
+**Speculative changes apply immediately; ground-truth changes defer until sign-off.** Specs/plans/tasks/ADRs evolve freely. AGENTS.md/CLAUDE.md/constitution.md changes are batched in `.claude/pending-changes.md` and applied only at deliberate review moments via `/sf:curate`. This separates exploratory work from canonical updates.
 
 **One-command bootstrap.** `savvy new <name> --llm <agent> --idea "<text>"` handles the entire project initialization (Copier + intake), so a new project goes from idea to fully scaffolded in a single command + one Claude Code session.
 
 **Active archival over silent coexistence.** When structural changes happen (initial migration onto framework, or major version updates), old files don't quietly stay alongside new — they move to `_legacy/<migration-name>/` for deliberate review. The `legacy-reviewer` skill walks each item with three options (keep archived / delete / restore to active). This makes cleanup intentional rather than indefinitely deferred.
 
-**Scratchpads for exploration that doesn't touch the project.** Sometimes you want to explore ideas, draft documents, prototype code, or have free-form discussions about the project without those affecting ROADMAP, specs, CHANGELOG, or any main-project state. Scratchpads (`scratchpads/<name>/`) are first-class isolated workspaces inside the repo — Claude operates in a mode where framework machinery (curator, bloat-watcher, spec-bootstrap) is inert and changes don't propagate to main project files. When a scratchpad's exploration becomes ready, `/promote-scratchpad` converts findings into real specs and ADRs.
+**Scratchpads for exploration that doesn't touch the project.** Sometimes you want to explore ideas, draft documents, prototype code, or have free-form discussions about the project without those affecting ROADMAP, specs, CHANGELOG, or any main-project state. Scratchpads (`scratchpads/<name>/`) are first-class isolated workspaces inside the repo — Claude operates in a mode where framework machinery (curator, bloat-watcher, spec-bootstrap) is inert and changes don't propagate to main project files. When a scratchpad's exploration becomes ready, `/sf:promote-scratchpad` converts findings into real specs and ADRs.
 
 ---
 
@@ -80,9 +80,9 @@ A standard structure, workflow, and tooling layer for AI-assisted software devel
 | Notion sync (when on) | Real-time via GitHub Action, gated by config | Per-project opt-in |
 | Hooks shipped | Format-on-write, secret-scan, bloat-check, Stop-checkpoint | Minimum deterministic enforcement |
 | Universal skills shipped | Curator, bloat-watcher, linter, spec-bootstrap, lesson-recorder, release-gate, project-intake, project-evolve, legacy-reviewer, scratchpad-mode | Framework self-maintenance + bootstrap + cleanup + exploration |
-| Slash commands shipped | `/spec`, `/plan`, `/tasks`, `/ship`, `/handover`, `/checkpoint`, `/refresh-roadmap`, `/sync-notion`, `/lint-framework`, `/lesson`, `/curate`, `/intake`, `/evolve`, `/spec-revise`, `/spec-archive`, `/stack-evolve`, `/status-sync`, `/legacy-review`, `/scratchpad`, `/scratchpad-exit`, `/scratchpad-list`, `/promote-scratchpad`, `/archive-scratchpad` | Methodology + bootstrap + ongoing updates + cleanup + exploration |
+| Slash commands shipped | `/sf:spec`, `/sf:plan`, `/sf:tasks`, `/sf:ship`, `/sf:handover`, `/sf:checkpoint`, `/sf:refresh-roadmap`, `/sf:sync-notion`, `/sf:lint-framework`, `/sf:lesson`, `/sf:curate`, `/sf:intake`, `/sf:evolve`, `/sf:spec-revise`, `/sf:spec-archive`, `/sf:stack-evolve`, `/sf:status-sync`, `/sf:legacy-review`, `/sf:scratchpad`, `/sf:scratchpad-exit`, `/sf:scratchpad-list`, `/sf:promote-scratchpad`, `/sf:archive-scratchpad` | Methodology + bootstrap + ongoing updates + cleanup + exploration |
 | CLI wrapper | `savvy` shell function (v1.0), Homebrew tap (v1.1+) | Solo-friendly first, share-friendly later |
-| /evolve scope | Spec/plan/tasks/ADRs apply immediately; AGENTS/CLAUDE/constitution defer to pending-changes.md | Exploratory work fast, ground-truth deliberate |
+| /sf:evolve scope | Spec/plan/tasks/ADRs apply immediately; AGENTS/CLAUDE/constitution defer to pending-changes.md | Exploratory work fast, ground-truth deliberate |
 | Migration archival | Old structures move to `_legacy/<migration-name>/` for review, not silent coexistence | Deliberate cleanup over indefinite drift |
 | Scratchpads | First-class `scratchpads/<name>/` workspaces; framework machinery inert in scratchpad-mode | Exploration without polluting main project state |
 | Template repo | `shaunchew/savvy-template` (public) | Discoverable, no IP risk |
@@ -104,8 +104,8 @@ A standard structure, workflow, and tooling layer for AI-assisted software devel
 │   ├── settings.json               # hooks configuration
 │   ├── config.toml                 # framework-level config (integrations on/off)
 │   ├── lessons.md                  # session-learned lessons (curated)
-│   ├── pending-changes.md          # proposed core-file edits awaiting /curate sign-off
-│   ├── intake-input.md             # transient: idea text written by savvy CLI, consumed by /intake
+│   ├── pending-changes.md          # proposed core-file edits awaiting /sf:curate sign-off
+│   ├── intake-input.md             # transient: idea text written by savvy CLI, consumed by /sf:intake
 │   ├── commands/                   # slash commands
 │   │   ├── spec.md
 │   │   ├── plan.md
@@ -258,11 +258,11 @@ Claude-specific overlay. ≤15 lines.
 This project follows the Savvy Coding Framework. Universal project context is in `AGENTS.md` — read it first.
 
 ## Claude Code behaviors
-- IMPORTANT: When proposing to add content to CLAUDE.md, AGENTS.md, or constitution.md, use the `framework-curator` skill to validate placement. Such changes are deferred to `.claude/pending-changes.md` during `/evolve` and applied only via `/curate` sign-off.
+- IMPORTANT: When proposing to add content to CLAUDE.md, AGENTS.md, or constitution.md, use the `framework-curator` skill to validate placement. Such changes are deferred to `.claude/pending-changes.md` during `/sf:evolve` and applied only via `/sf:curate` sign-off.
 - When compacting, preserve: active spec, current file list, test status.
 - Prefer plan mode for any task touching >3 files.
 - Use the `release-gate` skill before merging to main.
-- On session start, check for `.claude/intake-input.md`. If present, run `/intake --from-file .claude/intake-input.md`.
+- On session start, check for `.claude/intake-input.md`. If present, run `/sf:intake --from-file .claude/intake-input.md`.
 ```
 
 ### 4.3 constitution.md
@@ -332,7 +332,7 @@ See `CHANGELOG.md`.
 
 ### 4.6 HANDOVER.md
 
-Auto-updated by `/handover` and Stop hook.
+Auto-updated by `/sf:handover` and Stop hook.
 
 ```markdown
 # Handover
@@ -354,7 +354,7 @@ Last updated: {{auto}}
 ## Next step
 {One concrete action}
 
-## Pending changes awaiting /curate
+## Pending changes awaiting /sf:curate
 - {count} entries in .claude/pending-changes.md
 ```
 
@@ -374,11 +374,11 @@ Each `specs/<category>/NNN-feature/` contains:
 ```markdown
 # Pending Changes — Awaiting Sign-off
 
-Changes to core files (AGENTS.md, CLAUDE.md, constitution.md) and integration configs proposed by /evolve invocations but not yet applied. Review and approve via `/curate` when work is complete (typically after `/ship`).
+Changes to core files (AGENTS.md, CLAUDE.md, constitution.md) and integration configs proposed by /sf:evolve invocations but not yet applied. Review and approve via `/sf:curate` when work is complete (typically after `/sf:ship`).
 
 ## YYYY-MM-DD HH:MM · <target-file> · <field>
 <proposed change>
-Source: /evolve "<change description>" → <spec ref if applicable>
+Source: /sf:evolve "<change description>" → <spec ref if applicable>
 
 (entries appended chronologically)
 ```
@@ -399,27 +399,27 @@ Monitors line counts. PostToolUse hook triggers on edits to context files; retur
 
 ### 5.3 framework-linter
 
-On-demand validation via `/lint-framework`. Identifies drift, missing files, malformed specs, rule violations, template version drift, stale `_legacy/` migration folders (older than 90 days without full review), and stale scratchpads (active scratchpads older than 60 days that haven't been promoted or archived).
+On-demand validation via `/sf:lint-framework`. Identifies drift, missing files, malformed specs, rule violations, template version drift, stale `_legacy/` migration folders (older than 90 days without full review), and stale scratchpads (active scratchpads older than 60 days that haven't been promoted or archived).
 
 ### 5.4 spec-bootstrap
 
-Triggered by `/spec <category>/<name>`. Auto-numbers within category, creates folder + 4 files from templates, pre-fills frontmatter, updates ROADMAP.md.
+Triggered by `/sf:spec <category>/<name>`. Auto-numbers within category, creates folder + 4 files from templates, pre-fills frontmatter, updates ROADMAP.md.
 
 ### 5.5 lesson-recorder
 
-Captures lessons during sessions via `/lesson "<text>"` or via Stop hook prompt. Appends to `.claude/lessons.md` with tags (placement, gotcha, pattern, mistake-avoided).
+Captures lessons during sessions via `/sf:lesson "<text>"` or via Stop hook prompt. Appends to `.claude/lessons.md` with tags (placement, gotcha, pattern, mistake-avoided).
 
 ### 5.6 release-gate
 
-Triggered by `/ship <category>/<NNN>`. Walks through `checklist.md` item by item, on all-pass updates CHANGELOG, moves spec status to shipped, tags release, triggers Notion sync if enabled.
+Triggered by `/sf:ship <category>/<NNN>`. Walks through `checklist.md` item by item, on all-pass updates CHANGELOG, moves spec status to shipped, tags release, triggers Notion sync if enabled.
 
 ### 5.7 project-intake (new in v1.0)
 
 **Purpose:** One-shot project bootstrap from a description. Takes any size product idea, decomposes it, drafts all framework artifacts, presents in approval batches, executes.
 
 **Triggered when:**
-- User runs `/intake "<idea>"` (inline)
-- User runs `/intake --from-file <path>` (file-based, what the `savvy` CLI uses)
+- User runs `/sf:intake "<idea>"` (inline)
+- User runs `/sf:intake --from-file <path>` (file-based, what the `savvy` CLI uses)
 - Session starts and `.claude/intake-input.md` exists (auto-detected per CLAUDE.md instruction)
 
 **Behavior:**
@@ -437,12 +437,12 @@ Triggered by `/ship <category>/<NNN>`. Walks through `checklist.md` item by item
    - **Batch 5 — Integrations:** Recommends which integrations to enable based on the description (e.g., "Trade desk → Telegram", "portfolio mirroring → Notion"). Prompts for credentials.
 3. **Approval gates** between batches. User can `y` (approve all), `select` (cherry-pick), or `modify` (revise proposal).
 4. **Execute** approved changes. One commit per batch for clean git history.
-5. **Hand off:** Print summary, suggest `/lint-framework` to verify, suggest `/plan <first-spec>` to start work.
+5. **Hand off:** Print summary, suggest `/sf:lint-framework` to verify, suggest `/sf:plan <first-spec>` to start work.
 
 **Example invocation (full trace in §11):**
 
 ```
-You: /intake --from-file .claude/intake-input.md
+You: /sf:intake --from-file .claude/intake-input.md
 
 Claude: [reads file, analyzes]
         Project: stocks-trading-agents (software-dev variant, financial domain)
@@ -462,7 +462,7 @@ Claude: [writes, commits "intake: core files"]
 
 **Purpose:** Drive ongoing changes to the project. Smart router that figures out what kind of change is happening (net-new feature, scope cut, stack pivot, status update) and routes to the right action. Critically, applies speculative changes immediately but defers ground-truth changes to `.claude/pending-changes.md`.
 
-**Triggered when:** User runs `/evolve "<change description>"`
+**Triggered when:** User runs `/sf:evolve "<change description>"`
 
 **Behavior:**
 
@@ -484,7 +484,7 @@ Claude: [writes, commits "intake: core files"]
    - constitution.md additions
    - Integration config flips
 
-   Each pending entry has timestamp, target file, proposed content, source (which /evolve invocation), and which spec it relates to.
+   Each pending entry has timestamp, target file, proposed content, source (which /sf:evolve invocation), and which spec it relates to.
 4. **Report at the end:**
 
    ```
@@ -499,26 +499,26 @@ Claude: [writes, commits "intake: core files"]
    - constitution.md addition (risk multiplier)
    - AGENTS.md command addition (copy-trade simulation)
 
-   Run /curate when work is shipped to apply deferred changes.
+   Run /sf:curate when work is shipped to apply deferred changes.
    ```
 
 **Specific shortcut commands** (for when you know exactly what you want):
 
-- `/spec-revise <ref> "<change>"` — modify an existing spec's spec.md/plan.md/tasks.md
-- `/spec-archive <ref> "<reason>"` — move to specs/_archive/, update ROADMAP, log to CHANGELOG
-- `/stack-evolve "<change>"` — explicit AGENTS.md stack section update (deferred to pending) + ADR creation (immediate)
-- `/status-sync` — scan git branches matching `<category>/<NNN>-*` patterns, check PR statuses, update spec status frontmatter in spec.md, refresh ROADMAP
+- `/sf:spec-revise <ref> "<change>"` — modify an existing spec's spec.md/plan.md/tasks.md
+- `/sf:spec-archive <ref> "<reason>"` — move to specs/_archive/, update ROADMAP, log to CHANGELOG
+- `/sf:stack-evolve "<change>"` — explicit AGENTS.md stack section update (deferred to pending) + ADR creation (immediate)
+- `/sf:status-sync` — scan git branches matching `<category>/<NNN>-*` patterns, check PR statuses, update spec status frontmatter in spec.md, refresh ROADMAP
 
-These shortcuts skip the analysis step and go straight to the action. Useful for power use; `/evolve` is the default for natural use.
+These shortcuts skip the analysis step and go straight to the action. Useful for power use; `/sf:evolve` is the default for natural use.
 
 ### 5.9 legacy-reviewer (new in v1.0)
 
 **Purpose:** Walks the user through `_legacy/` migration folders one item at a time, capturing decisions about what to keep, delete, or restore. Makes cleanup intentional rather than indefinitely deferred.
 
 **Triggered when:**
-- User runs `/legacy-review` (manual review session)
-- User runs `/legacy-review <migration-folder>` (review specific migration)
-- framework-linter detects a `_legacy/<migration>/` folder older than 90 days without complete review (surfaces a warning suggesting `/legacy-review`)
+- User runs `/sf:legacy-review` (manual review session)
+- User runs `/sf:legacy-review <migration-folder>` (review specific migration)
+- framework-linter detects a `_legacy/<migration>/` folder older than 90 days without complete review (surfaces a warning suggesting `/sf:legacy-review`)
 
 **Behavior:**
 
@@ -566,14 +566,14 @@ Migration script: .savvy/migrations/v2.0.0/run.sh
 - Folder marked fully-reviewed. Moving to _legacy/_archive/.
 ```
 
-**Migration script integration.** When `copier update` runs across a major version boundary, the migration script (declared in `copier.yml _migrations`) creates `_legacy/<from-version>-to-<to-version>-<date>/`, copies the old structure into it, then performs the new structure transforms in the working copy. User finishes update with both new structure (active) and `_legacy/` (frozen archive). `/legacy-review` becomes the cleanup workflow.
+**Migration script integration.** When `copier update` runs across a major version boundary, the migration script (declared in `copier.yml _migrations`) creates `_legacy/<from-version>-to-<to-version>-<date>/`, copies the old structure into it, then performs the new structure transforms in the working copy. User finishes update with both new structure (active) and `_legacy/` (frozen archive). `/sf:legacy-review` becomes the cleanup workflow.
 
 ### 5.10 scratchpad-mode (new in v1.0)
 
-**Purpose:** Provides isolated exploration workspaces inside a project. Lets the user have free-form conversations, draft documents, prototype code, and generate files without those changes touching ROADMAP, specs, CHANGELOG, or any main-project state. When the exploration becomes ready, `/promote-scratchpad` converts findings into real specs and ADRs.
+**Purpose:** Provides isolated exploration workspaces inside a project. Lets the user have free-form conversations, draft documents, prototype code, and generate files without those changes touching ROADMAP, specs, CHANGELOG, or any main-project state. When the exploration becomes ready, `/sf:promote-scratchpad` converts findings into real specs and ADRs.
 
 **Triggered when:**
-- User runs `/scratchpad <name>` (creates if doesn't exist, enters if it does)
+- User runs `/sf:scratchpad <name>` (creates if doesn't exist, enters if it does)
 - Implicitly active whenever the working scope is inside `scratchpads/<name>/`
 
 **Behavior in scratchpad mode:**
@@ -587,9 +587,9 @@ Migration script: .savvy/migrations/v2.0.0/run.sh
    - ROADMAP.md, CHANGELOG.md, HANDOVER.md: not updated
 3. **Generated files** go in `scratchpads/<this-one>/generated/`. Any drafts, prototypes, research outputs, sketches.
 4. **Persistence.** All scratchpad content is committed to git by default. User can `.gitignore` specific scratchpads for private explorations.
-5. **What's still active:** `/lesson` works (lessons are universal). `/handover` updates HANDOVER.md noting "currently in scratchpad X". `/lint-framework` works but only flags scratchpad-specific issues (staleness).
+5. **What's still active:** `/sf:lesson` works (lessons are universal). `/sf:handover` updates HANDOVER.md noting "currently in scratchpad X". `/sf:lint-framework` works but only flags scratchpad-specific issues (staleness).
 
-**Exit:** `/scratchpad-exit` returns Claude to normal project mode. The scratchpad's state is preserved for future return.
+**Exit:** `/sf:scratchpad-exit` returns Claude to normal project mode. The scratchpad's state is preserved for future return.
 
 **`scratchpads/<name>/SCRATCHPAD.md` format** (lightweight, ≤30 lines):
 
@@ -611,10 +611,10 @@ Migration script: .savvy/migrations/v2.0.0/run.sh
 {Optional: speculation about whether this might become a spec, ADR, or just stay archived}
 ```
 
-**Promotion via `/promote-scratchpad <name>`:**
+**Promotion via `/sf:promote-scratchpad <name>`:**
 
 1. Claude reads `SCRATCHPAD.md`, `notes.md`, `findings.md`, and any generated files
-2. Proposes what becomes what — same five-batch flow as `/intake` but scoped to scratchpad content:
+2. Proposes what becomes what — same five-batch flow as `/sf:intake` but scoped to scratchpad content:
    - New specs (if exploration suggests time-bounded work)
    - New ADRs (if architectural decisions were made)
    - New docs entries (if reference material was produced)
@@ -624,9 +624,9 @@ Migration script: .savvy/migrations/v2.0.0/run.sh
 5. `REVIEW.md` is written into the scratchpad documenting what got promoted
 6. Scratchpad moves to `scratchpads/_archive/<name>/` (or stays in place if user prefers)
 
-**Archive via `/archive-scratchpad <name> "<reason>"`:** Moves scratchpad to `scratchpads/_archive/<name>/` without promoting. Used when exploration ended in "nope, not worth pursuing" but the work record is worth keeping.
+**Archive via `/sf:archive-scratchpad <name> "<reason>"`:** Moves scratchpad to `scratchpads/_archive/<name>/` without promoting. Used when exploration ended in "nope, not worth pursuing" but the work record is worth keeping.
 
-**`/scratchpad-list` output:**
+**`/sf:scratchpad-list` output:**
 
 ```
 Active scratchpads (3):
@@ -651,9 +651,9 @@ When Claude or the user proposes adding content somewhere, the curator walks thi
 Is the content...
   → Enforceable by a linter or formatter?            → Don't document. Let the tool enforce.
   → Inferable from package.json/code/README/tests?   → Don't document. Redundant.
-  → A stack/command/quirk Claude wouldn't guess?     → AGENTS.md (deferred to pending if via /evolve)
-  → Claude-specific behavior (compaction, etc.)?     → CLAUDE.md (deferred to pending if via /evolve)
-  → A project-wide invariant or non-negotiable?      → constitution.md (deferred to pending if via /evolve)
+  → A stack/command/quirk Claude wouldn't guess?     → AGENTS.md (deferred to pending if via /sf:evolve)
+  → Claude-specific behavior (compaction, etc.)?     → CLAUDE.md (deferred to pending if via /sf:evolve)
+  → A project-wide invariant or non-negotiable?      → constitution.md (deferred to pending if via /sf:evolve)
   → Something that must happen every time?           → Hook in .claude/settings.json
   → A specialized workflow used sometimes?           → New skill in .claude/skills/
   → Specific to one feature?                         → That feature's spec/plan/tasks
@@ -675,7 +675,7 @@ Is the content...
 $ savvy new stocks-trading-agents --llm claude --idea "$(cat idea.md)"
 # (savvy CLI runs copier, writes intake-input.md, launches claude)
 
-# Claude Code auto-detects intake-input.md, runs /intake
+# Claude Code auto-detects intake-input.md, runs /sf:intake
 # You approve 5 batches in ~15 min
 # Done. ~120 files, all configured.
 ```
@@ -683,28 +683,28 @@ $ savvy new stocks-trading-agents --llm claude --idea "$(cat idea.md)"
 ### Adding new work to existing project
 
 ```
-You: /evolve "Add copy trading feature where users mirror top traders"
+You: /sf:evolve "Add copy trading feature where users mirror top traders"
 
 Claude: [project-evolve analyzes]
         Applied: new spec product/012, updates to 009 and 011, ADR placeholder
         Deferred: 2 changes to constitution.md and AGENTS.md
 
-You: /plan product/012  # start working on the spec
+You: /sf:plan product/012  # start working on the spec
 ```
 
 ### Doing the work
 
-Standard `/plan`, `/tasks`, code, test. HANDOVER.md updates via Stop hook.
+Standard `/sf:plan`, `/sf:tasks`, code, test. HANDOVER.md updates via Stop hook.
 
 ### Shipping
 
 ```
-You: /ship product/012
+You: /sf:ship product/012
 Claude: [release-gate walks checklist]
         Spec shipped. CHANGELOG updated.
-        Reminder: 2 pending changes from this work — run /curate.
+        Reminder: 2 pending changes from this work — run /sf:curate.
 
-You: /curate
+You: /sf:curate
 Claude: [walks pending-changes.md entries, framework-curator validates each]
         2 changes reviewed, both approved, applied to constitution.md and AGENTS.md.
 ```
@@ -712,15 +712,15 @@ Claude: [walks pending-changes.md entries, framework-curator validates each]
 ### Session continuity
 
 Stop hook on session end:
-1. Runs `/checkpoint` — proposes CLAUDE.md updates (deferred to pending-changes.md)
-2. Runs `/handover` — updates HANDOVER.md
+1. Runs `/sf:checkpoint` — proposes CLAUDE.md updates (deferred to pending-changes.md)
+2. Runs `/sf:handover` — updates HANDOVER.md
 3. Reports pending-changes count
-4. Optionally prompts for `/lesson`
+4. Optionally prompts for `/sf:lesson`
 
 ### Exploration via scratchpads
 
 ```
-You: /scratchpad explore-tiktok-api
+You: /sf:scratchpad explore-tiktok-api
 
 Claude: [scratchpad-mode skill activates]
         Created scratchpads/001-explore-tiktok-api/
@@ -728,7 +728,7 @@ Claude: [scratchpad-mode skill activates]
 
         You're in scratchpad mode. Framework machinery is inert here.
         Anything you write or generate stays in this folder until you
-        /promote-scratchpad or /archive-scratchpad.
+        /sf:promote-scratchpad or /sf:archive-scratchpad.
 
         What are you exploring?
 
@@ -741,11 +741,11 @@ Claude: [writes notes.md with research approach]
 
 # ... (free-form exploration, multiple sessions over days) ...
 
-You: /scratchpad-exit
+You: /sf:scratchpad-exit
 
 # Later, when ready to promote:
 
-You: /promote-scratchpad explore-tiktok-api
+You: /sf:promote-scratchpad explore-tiktok-api
 
 Claude: [reads scratchpad contents, proposes]
         Findings suggest yt-dlp is the right choice. Proposing:
@@ -773,29 +773,29 @@ Scratchpads bridge the gap between "I have an idea" and "this is real work the p
 
 | Command | Purpose | Triggers |
 |---|---|---|
-| `/intake "<idea>"` or `/intake --from-file <path>` | Bootstrap entire project from a description | project-intake skill |
-| `/evolve "<change>"` | Smart router for ongoing changes | project-evolve skill |
-| `/spec <category>/<name>` | Bootstrap a single new spec | spec-bootstrap skill |
-| `/plan` | Draft plan.md for current spec | Claude reads spec.md + constitution |
-| `/tasks` | Break plan into tasks | Claude generates tasks.md |
-| `/ship <category>/<NNN>` | Run release-gate to ship a spec | release-gate skill |
-| `/handover` | Refresh HANDOVER.md | Reads git state + active spec |
-| `/checkpoint` | Propose CLAUDE.md edits (deferred), update CHANGELOG | framework-curator skill |
-| `/curate` | Walk pending-changes.md entries, apply or reject | framework-curator skill |
-| `/refresh-roadmap` | Auto-regenerate ROADMAP.md | Scans specs/, writes index |
-| `/sync-notion` | Manual Notion sync trigger | Only works if integration enabled |
-| `/lint-framework` | Validate framework state | framework-linter skill |
-| `/lesson "<text>"` | Record a lesson | lesson-recorder skill |
-| `/spec-revise <ref> "<change>"` | Edit an existing spec | project-evolve subroutine |
-| `/spec-archive <ref> "<reason>"` | Archive/cancel a spec | project-evolve subroutine |
-| `/stack-evolve "<change>"` | AGENTS.md stack update + ADR | project-evolve subroutine |
-| `/status-sync` | Sync spec statuses from git/PR state | project-evolve subroutine |
-| `/legacy-review [migration-folder]` | Walk `_legacy/` items, decide keep/delete/restore | legacy-reviewer skill |
-| `/scratchpad <name>` | Enter or create an isolated exploration workspace | scratchpad-mode skill |
-| `/scratchpad-exit` | Return from scratchpad to main project mode | scratchpad-mode skill |
-| `/scratchpad-list` | Show all scratchpads with status | scratchpad-mode skill |
-| `/promote-scratchpad <name>` | Convert scratchpad findings to specs/ADRs | scratchpad-mode + /evolve |
-| `/archive-scratchpad <name> "<reason>"` | Archive scratchpad without promoting | scratchpad-mode skill |
+| `/sf:intake "<idea>"` or `/sf:intake --from-file <path>` | Bootstrap entire project from a description | project-intake skill |
+| `/sf:evolve "<change>"` | Smart router for ongoing changes | project-evolve skill |
+| `/sf:spec <category>/<name>` | Bootstrap a single new spec | spec-bootstrap skill |
+| `/sf:plan` | Draft plan.md for current spec | Claude reads spec.md + constitution |
+| `/sf:tasks` | Break plan into tasks | Claude generates tasks.md |
+| `/sf:ship <category>/<NNN>` | Run release-gate to ship a spec | release-gate skill |
+| `/sf:handover` | Refresh HANDOVER.md | Reads git state + active spec |
+| `/sf:checkpoint` | Propose CLAUDE.md edits (deferred), update CHANGELOG | framework-curator skill |
+| `/sf:curate` | Walk pending-changes.md entries, apply or reject | framework-curator skill |
+| `/sf:refresh-roadmap` | Auto-regenerate ROADMAP.md | Scans specs/, writes index |
+| `/sf:sync-notion` | Manual Notion sync trigger | Only works if integration enabled |
+| `/sf:lint-framework` | Validate framework state | framework-linter skill |
+| `/sf:lesson "<text>"` | Record a lesson | lesson-recorder skill |
+| `/sf:spec-revise <ref> "<change>"` | Edit an existing spec | project-evolve subroutine |
+| `/sf:spec-archive <ref> "<reason>"` | Archive/cancel a spec | project-evolve subroutine |
+| `/sf:stack-evolve "<change>"` | AGENTS.md stack update + ADR | project-evolve subroutine |
+| `/sf:status-sync` | Sync spec statuses from git/PR state | project-evolve subroutine |
+| `/sf:legacy-review [migration-folder]` | Walk `_legacy/` items, decide keep/delete/restore | legacy-reviewer skill |
+| `/sf:scratchpad <name>` | Enter or create an isolated exploration workspace | scratchpad-mode skill |
+| `/sf:scratchpad-exit` | Return from scratchpad to main project mode | scratchpad-mode skill |
+| `/sf:scratchpad-list` | Show all scratchpads with status | scratchpad-mode skill |
+| `/sf:promote-scratchpad <name>` | Convert scratchpad findings to specs/ADRs | scratchpad-mode + /sf:evolve |
+| `/sf:archive-scratchpad <name> "<reason>"` | Archive scratchpad without promoting | scratchpad-mode skill |
 
 ---
 
@@ -833,7 +833,7 @@ Scratchpads bridge the gap between "I have an idea" and "this is real work the p
 **format.sh** — Runs Prettier/Black on edited files.
 **bloat-check.sh** — Runs bloat-watcher against AGENTS.md, CLAUDE.md, constitution.md.
 **secret-scan.sh** — Scans for common secret patterns before commit/push.
-**session-end.sh** — Invokes `/handover`, surfaces pending-changes count, optionally prompts for `/lesson`.
+**session-end.sh** — Invokes `/sf:handover`, surfaces pending-changes count, optionally prompts for `/sf:lesson`.
 
 ---
 
@@ -854,11 +854,11 @@ When `enabled = true`, the integration's hooks/skills/workflows activate.
 
 ### 9.1 notion (sync skill)
 
-On spec creation: pushes tasks.md as Notion DB rows. On commit (real-time): syncs changes via GitHub Action. On `/ship`: marks Notion rows complete. Manual: `/sync-notion`.
+On spec creation: pushes tasks.md as Notion DB rows. On commit (real-time): syncs changes via GitHub Action. On `/sf:ship`: marks Notion rows complete. Manual: `/sf:sync-notion`.
 
 ### 9.2 telegram (capture forwarder)
 
-Bot accepts text + images on mobile, fires to your sandbox via webhook. Standalone deployment. Tasks captured via Telegram can auto-tag a spec via `/spec product/003` syntax.
+Bot accepts text + images on mobile, fires to your sandbox via webhook. Standalone deployment. Tasks captured via Telegram can auto-tag a spec via `/sf:spec product/003` syntax.
 
 ### 9.3 ram (Remote AI Maestro capture)
 
@@ -956,7 +956,7 @@ savvy new <name> --llm <agent> --idea "<text>" [--idea-from-file <path>] [--vari
 2. Writes the idea text to `<name>/.claude/intake-input.md`
 3. cd's into `<name>/`
 4. Launches the LLM CLI (`claude`, `codex`, or `gemini`)
-5. The LLM auto-detects `.claude/intake-input.md` (via CLAUDE.md instruction) and runs `/intake --from-file`
+5. The LLM auto-detects `.claude/intake-input.md` (via CLAUDE.md instruction) and runs `/sf:intake --from-file`
 
 End result: from one terminal command to fully scaffolded project in ~15-20 minutes.
 
@@ -1034,7 +1034,7 @@ Two variants. Both supported; pick per repo based on your appetite.
 
 **Variant A — Passive coexistence (low-touch).** Old files stay in their original locations alongside new structure. Naturally retired over time.
 
-**Variant B — Active archival (deliberate).** Files you choose move to `_legacy/initial-migration-<date>/` for review via `/legacy-review`. Clean separation between old and new from day one.
+**Variant B — Active archival (deliberate).** Files you choose move to `_legacy/initial-migration-<date>/` for review via `/sf:legacy-review`. Clean separation between old and new from day one.
 
 Choose A when the existing repo is messy but you don't want to deal with it yet. Choose B when you want a clean slate and are willing to spend an hour reviewing.
 
@@ -1057,7 +1057,7 @@ Use framework-curator to author AGENTS.md, CLAUDE.md, constitution.md. ~30-60 mi
 
 **Step 3: Migrate active work to new spec structure**
 
-For in-flight work, create new specs via `/spec <category>/<name>` or `/evolve "<description>"`. Old PLAN.md, TASKS.md, ad-hoc docs stay in place.
+For in-flight work, create new specs via `/sf:spec <category>/<name>` or `/sf:evolve "<description>"`. Old PLAN.md, TASKS.md, ad-hoc docs stay in place.
 
 **Step 4: Let old structure age out**
 
@@ -1069,7 +1069,7 @@ When a repo has fully transitioned, prune old files. No deadline.
 
 ### 12.2 Variant B — Active archival via `_legacy/`
 
-Strategy: deliberate triage at framework adoption time. Old structure gets moved to `_legacy/initial-migration-<date>/` for `/legacy-review` to walk through.
+Strategy: deliberate triage at framework adoption time. Old structure gets moved to `_legacy/initial-migration-<date>/` for `/sf:legacy-review` to walk through.
 
 **Step 1: Add the framework + run initial archive**
 
@@ -1078,7 +1078,7 @@ cd <existing-repo>
 uvx copier copy gh:shaunchew/savvy-template . --answers-file <existing-answers>
 
 # Inside Claude Code:
-> /legacy-review --initial-migration
+> /sf:legacy-review --initial-migration
 ```
 
 The `--initial-migration` flag is special: it scans the repo for files that don't fit the new structure (existing PLAN.md, TASKS.md, ad-hoc folders) and *proposes* which to archive. You approve per item:
@@ -1098,7 +1098,7 @@ For in-flight work, create new specs. If the work has notes/plans in `_legacy/`,
 
 **Step 4: Review the legacy folder**
 
-Run `/legacy-review` periodically (or when prompted by framework-linter staleness warning). Walk each item: keep archived, delete now, or restore to active location.
+Run `/sf:legacy-review` periodically (or when prompted by framework-linter staleness warning). Walk each item: keep archived, delete now, or restore to active location.
 
 **Step 5: Finalize**
 
@@ -1139,7 +1139,7 @@ These don't translate. Don't try to abstract them.
 ### 14.1 Versioning
 
 `savvy-template` follows semantic versioning:
-- **Major (v2.0.0):** Breaking changes to structure. Migration script required. Old structure moves to `_legacy/v<from>-to-v<to>-<date>/` for `/legacy-review`.
+- **Major (v2.0.0):** Breaking changes to structure. Migration script required. Old structure moves to `_legacy/v<from>-to-v<to>-<date>/` for `/sf:legacy-review`.
 - **Minor (v1.1.0):** Additive. Safe `copier update`. No `_legacy/` archival needed.
 - **Patch (v1.0.1):** Fixes. Always safe. No structural changes.
 
@@ -1158,7 +1158,7 @@ For **major version updates**, the workflow runs a migration script (declared in
 3. Writes `MIGRATION_NOTES.md` documenting what moved and why
 4. Hands control back to Copier for the standard interactive diff prompts
 
-After update completes, the user has both the new structure (active) and `_legacy/` (frozen archive). `/legacy-review` is the cleanup workflow — see §5.9.
+After update completes, the user has both the new structure (active) and `_legacy/` (frozen archive). `/sf:legacy-review` is the cleanup workflow — see §5.9.
 
 Each major version that introduces structural changes ships with its own migration script in `_migrations` of `copier.yml`. There's no generic migration engine; logic is authored per release.
 
@@ -1166,12 +1166,12 @@ Each major version that introduces structural changes ships with its own migrati
 
 - Critical fixes: immediate propagate
 - New features: at next active session per project
-- Major version migrations: do one project at a time with `/legacy-review` follow-up
+- Major version migrations: do one project at a time with `/sf:legacy-review` follow-up
 - Quarterly review: sweep all projects to latest
 
 ### 14.4 Drift detection
 
-`/lint-framework` includes:
+`/sf:lint-framework` includes:
 - Template version check (warns if more than 2 minor versions behind)
 - Stale `_legacy/` folder check (warns if any `_legacy/<migration>/` is older than 90 days without complete review)
 
@@ -1193,7 +1193,7 @@ Each major version that introduces structural changes ships with its own migrati
 ### Phase 2 — Pilot on Remote AI Maestro (Week 4)
 
 1. Run `savvy new` or `copier copy` on Remote AI Maestro (gradual mode)
-2. Author core files (or run `/intake` if rebuilding from scratch)
+2. Author core files (or run `/sf:intake` if rebuilding from scratch)
 3. Migrate one active spec to new structure
 4. Enable Notion + Telegram integrations
 5. Use the framework for 1 week
@@ -1244,8 +1244,8 @@ Deferred to v1.1 or v2.0:
 | spec.md | 100 lines | 200 lines | bloat-watcher (warn) |
 | plan.md | 150 lines | 300 lines | bloat-watcher (warn) |
 | ROADMAP.md | 80 lines | 150 lines | bloat-watcher (warn) |
-| HANDOVER.md | 30 lines | 50 lines | regenerated each `/handover` |
-| pending-changes.md | (no limit) | (warn at 50 entries) | bloat-watcher (suggest /curate) |
+| HANDOVER.md | 30 lines | 50 lines | regenerated each `/sf:handover` |
+| pending-changes.md | (no limit) | (warn at 50 entries) | bloat-watcher (suggest /sf:curate) |
 
 ## Appendix B: Naming Conventions
 
@@ -1258,26 +1258,26 @@ Deferred to v1.1 or v2.0:
 ## Appendix C: Quick Reference — When to Use What
 
 - "Start a new project from idea" → `savvy new <name> --idea "..."`
-- "Add a new feature mid-project" → `/evolve "<description>"`
-- "Sign off on pending core-file changes" → `/curate`
-- "Just bootstrap one new spec" → `/spec <category>/<name>`
-- "Edit an existing spec" → `/spec-revise <ref> "..."`
-- "Cancel/archive a spec" → `/spec-archive <ref> "..."`
-- "Major stack change" → `/stack-evolve "..."`
-- "Sync spec statuses from git" → `/status-sync`
-- "Explore an idea without affecting main project" → `/scratchpad <name>`
-- "Return from scratchpad to main project" → `/scratchpad-exit`
-- "Promote scratchpad findings into real specs/ADRs" → `/promote-scratchpad <name>`
-- "Archive a scratchpad that didn't pan out" → `/archive-scratchpad <name> "..."`
-- "Review old files in `_legacy/` and decide keep/delete/restore" → `/legacy-review`
+- "Add a new feature mid-project" → `/sf:evolve "<description>"`
+- "Sign off on pending core-file changes" → `/sf:curate`
+- "Just bootstrap one new spec" → `/sf:spec <category>/<name>`
+- "Edit an existing spec" → `/sf:spec-revise <ref> "..."`
+- "Cancel/archive a spec" → `/sf:spec-archive <ref> "..."`
+- "Major stack change" → `/sf:stack-evolve "..."`
+- "Sync spec statuses from git" → `/sf:status-sync`
+- "Explore an idea without affecting main project" → `/sf:scratchpad <name>`
+- "Return from scratchpad to main project" → `/sf:scratchpad-exit`
+- "Promote scratchpad findings into real specs/ADRs" → `/sf:promote-scratchpad <name>`
+- "Archive a scratchpad that didn't pan out" → `/sf:archive-scratchpad <name> "..."`
+- "Review old files in `_legacy/` and decide keep/delete/restore" → `/sf:legacy-review`
 - "Adopt the framework on an existing repo with active triage" → Variant B in §12.2
 - "Adopt the framework on an existing repo without triage" → Variant A in §12.1
-- "How do I describe my stack to Claude?" → AGENTS.md (via /curate)
-- "How do I configure Claude-specific behavior?" → CLAUDE.md (via /curate)
-- "How do I lock in non-negotiable principle?" → constitution.md (via /curate)
+- "How do I describe my stack to Claude?" → AGENTS.md (via /sf:curate)
+- "How do I configure Claude-specific behavior?" → CLAUDE.md (via /sf:curate)
+- "How do I lock in non-negotiable principle?" → constitution.md (via /sf:curate)
 - "How do I capture a permanent technical decision?" → ADR in `docs/decisions/`
 - "How do I track ongoing operational state?" → `docs/ops/`
-- "How do I capture a learned lesson?" → `/lesson "..."`
+- "How do I capture a learned lesson?" → `/sf:lesson "..."`
 - "How do I update the framework everywhere?" → `copier update` per repo
 - "How do I add a new task system integration?" → New folder under `.claude/integrations/`
 

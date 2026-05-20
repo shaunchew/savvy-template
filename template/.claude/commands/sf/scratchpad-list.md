@@ -2,7 +2,7 @@
 description: List all active scratchpads with age and last-touched date.
 ---
 
-# /scratchpad-list
+# /sf:scratchpad-list
 
 List active scratchpads with age (days since created) and last-modified (days since most-recent mtime in the folder). Sort by recency. Highlight staleness.
 
@@ -17,8 +17,8 @@ List active scratchpads with age (days since created) and last-modified (days si
    - `generated_count` — number of files under `generated/`
 3. Sort the list by `last_modified_days` ascending (most-recently-touched first).
 4. Print a fixed-width table with columns: `Name | Age | Last touched | Generated files`. Append a `WARN stale` marker on any row where `last_modified_days > 60`.
-5. If there are zero active scratchpads, print `No active scratchpads. Create one with /scratchpad <name>.`
-6. After the table, print a single-line legend: `Stale threshold: 60 days without modification. Promote with /promote-scratchpad or archive with /archive-scratchpad.`
+5. If there are zero active scratchpads, print `No active scratchpads. Create one with /sf:scratchpad <name>.`
+6. After the table, print a single-line legend: `Stale threshold: 60 days without modification. Promote with /sf:promote-scratchpad or archive with /sf:archive-scratchpad.`
 
 ## Output
 

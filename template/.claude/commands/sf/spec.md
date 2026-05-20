@@ -3,7 +3,7 @@ description: Create a new spec folder with spec.md/plan.md/tasks.md/checklist.md
 argument-hint: "<category>/<name>"
 ---
 
-# /spec
+# /sf:spec
 
 Bootstrap a single new spec folder with the four canonical files and update ROADMAP.
 

@@ -3,9 +3,9 @@ description: Run an independent code review on the current branch's pending chan
 argument-hint: "[spec-ref]"
 ---
 
-# /review
+# /sf:review
 
-Get a second-opinion code review on the diff of the current branch before `/ship`. Delegates to the `code-reviewer` subagent so review output doesn't pollute the main session's context.
+Get a second-opinion code review on the diff of the current branch before `/sf:ship`. Delegates to the `code-reviewer` subagent so review output doesn't pollute the main session's context.
 
 ## Procedure
 
@@ -20,7 +20,7 @@ Get a second-opinion code review on the diff of the current branch before `/ship
    - The spec docs (if available)
    - `constitution.md` (always)
 4. Print the subagent's verdict and findings unchanged.
-5. If the verdict is `REQUEST-CHANGES` or there are blocking findings, do NOT proceed to suggest `/ship`. Otherwise suggest `/ship <ref>` as the next step.
+5. If the verdict is `REQUEST-CHANGES` or there are blocking findings, do NOT proceed to suggest `/sf:ship`. Otherwise suggest `/sf:ship <ref>` as the next step.
 
 ## Arguments
 

@@ -40,12 +40,12 @@ The main agent has handed you a task brief like:
 - <anything noticed in passing that's out of scope but worth flagging>
 
 ## Suggested follow-up
-<one concrete next action, or "ready for /ship">
+<one concrete next action, or "ready for /sf:ship">
 ```
 
 ## Constraints
 
 - One task per invocation. Don't bundle multiple unrelated tasks.
 - Respect `constitution.md` and `permissions.deny`. If a denied command is the natural choice, surface that as a blocker instead of trying to work around it.
-- No autonomous shipping. Don't run `/ship` or `git push` yourself.
+- No autonomous shipping. Don't run `/sf:ship` or `git push` yourself.
 - Token discipline. Don't paste large file contents into the summary — cite paths.

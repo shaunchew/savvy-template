@@ -2,7 +2,7 @@
 description: Run framework-linter to detect drift, missing files, malformed specs, rule violations, template drift, and stale scratchpads.
 ---
 
-# /lint-framework
+# /sf:lint-framework
 
 Run the framework linter and surface its findings with concrete fix suggestions.
 
@@ -11,10 +11,10 @@ Run the framework linter and surface its findings with concrete fix suggestions.
 1. Invoke the `framework-linter` skill with no arguments. It scans for: file-budget violations on AGENTS.md / CLAUDE.md / constitution.md, missing required files, malformed spec frontmatter, rule violations from the placement decision tree, template version drift, stale `_legacy/<migration>/` folders (>90 days unreviewed), and stale scratchpads (>60 days, not promoted or archived).
 2. Pass the linter's Markdown report through to the user unchanged. Do not reformat or summarize away its detail.
 3. For each finding, append a one-line suggested fix command beneath the finding when there is a sensible one. Examples:
-   - Bloat in AGENTS.md → `Suggest: trim via /curate or move to docs/`
-   - Stale `_legacy/` → `Suggest: /legacy-review <folder>`
-   - Stale scratchpad → `Suggest: /promote-scratchpad <name>` or `/archive-scratchpad <name> "<reason>"`
-   - Missing `ROADMAP.md` regeneration → `Suggest: /refresh-roadmap`
+   - Bloat in AGENTS.md → `Suggest: trim via /sf:curate or move to docs/`
+   - Stale `_legacy/` → `Suggest: /sf:legacy-review <folder>`
+   - Stale scratchpad → `Suggest: /sf:promote-scratchpad <name>` or `/sf:archive-scratchpad <name> "<reason>"`
+   - Missing `ROADMAP.md` regeneration → `Suggest: /sf:refresh-roadmap`
    - Template version drift → `Suggest: copier update`
 4. If the linter returns no findings, print `Framework state clean.` and exit.
 

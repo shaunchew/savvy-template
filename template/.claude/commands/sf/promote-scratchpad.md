@@ -3,7 +3,7 @@ description: Convert scratchpad findings into a real spec or ADR; archives the s
 argument-hint: "<NNN>-<name>"
 ---
 
-# /promote-scratchpad
+# /sf:promote-scratchpad
 
 Convert a scratchpad's findings into a real spec or ADR, then archive the scratchpad with a pointer back to the promoted artifact.
 
@@ -26,7 +26,7 @@ Convert a scratchpad's findings into a real spec or ADR, then archive the scratc
    - **cancel:** stop without any writes.
 6. Write `scratchpads/<NNN>-<name>/PROMOTED-TO.md` listing the new spec ref and/or ADR path with today's date and a one-line rationale.
 7. Move the scratchpad folder from `scratchpads/<NNN>-<name>/` to `scratchpads/_archive/<NNN>-<name>/` (use `git mv` if tracked). Update `SCRATCHPAD.md` frontmatter `status: promoted`.
-8. Run `/refresh-roadmap` if a spec was created.
+8. Run `/sf:refresh-roadmap` if a spec was created.
 9. Print a final summary: what was promoted, where it lives now, and where the scratchpad was archived.
 
 ## Arguments

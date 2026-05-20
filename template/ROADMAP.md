@@ -1,6 +1,6 @@
 # Roadmap
 
-Index of active specs, grouped by category. Auto-refreshed by /refresh-roadmap.
+Index of active specs, grouped by category. Auto-refreshed by /sf:refresh-roadmap.
 
 ## Product
 

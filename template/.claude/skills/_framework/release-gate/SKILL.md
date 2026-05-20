@@ -1,15 +1,15 @@
 ---
 name: release-gate
-description: Triggered by /ship <category>/<NNN> to walk checklist.md item-by-item; on all-pass updates CHANGELOG, moves spec to shipped, tags the release, and optionally syncs to Notion.
+description: Triggered by /sf:ship <category>/<NNN> to walk checklist.md item-by-item; on all-pass updates CHANGELOG, moves spec to shipped, tags the release, and optionally syncs to Notion.
 ---
 
 # Release Gate
 
-Triggered by `/ship <category>/<NNN>`. Walks `checklist.md` item-by-item; on all-pass, updates `CHANGELOG.md`, flips the spec status to shipped, updates `ROADMAP.md`, proposes a SemVer bump and git tag, and triggers Notion sync if enabled.
+Triggered by `/sf:ship <category>/<NNN>`. Walks `checklist.md` item-by-item; on all-pass, updates `CHANGELOG.md`, flips the spec status to shipped, updates `ROADMAP.md`, proposes a SemVer bump and git tag, and triggers Notion sync if enabled.
 
 ## When to invoke
 
-- User runs `/ship <category>/<NNN>` (e.g., `/ship product/009`).
+- User runs `/sf:ship <category>/<NNN>` (e.g., `/sf:ship product/009`).
 - User asks to "release", "ship", or "tag" a specific spec that has a `checklist.md`.
 - Do NOT invoke for arbitrary commits or for specs without a checklist.
 
@@ -39,7 +39,7 @@ Triggered by `/ship <category>/<NNN>`. Walks `checklist.md` item-by-item; on all
 
 ## Failure modes
 
-- Spec has no `checklist.md`: refuse and tell the user to add one or use `/spec-revise` to scaffold it.
+- Spec has no `checklist.md`: refuse and tell the user to add one or use `/sf:spec-revise` to scaffold it.
 - Any item answered `n` or `skip`: halt with the blocking item name; leave all files untouched except partial check marks already written (those stand — they are real).
 - `CHANGELOG.md` missing: create it with `# Changelog\n\n## [Unreleased]\n` header, then append.
 - Version proposal rejected by user: accept their override verbatim if it parses as SemVer; otherwise ask again.

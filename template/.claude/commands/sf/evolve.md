@@ -3,7 +3,7 @@ description: Smart router for ongoing project changes; speculative changes apply
 argument-hint: "\"<change>\""
 ---
 
-# /evolve
+# /sf:evolve
 
 Route an arbitrary project change to the right action — new spec, spec revision, archive, stack change, status sync — and split speculative edits (apply now) from ground-truth edits (defer to pending-changes).
 
@@ -13,8 +13,8 @@ Route an arbitrary project change to the right action — new spec, spec revisio
 2. Invoke the `project-evolve` skill with the change text. Let it read `AGENTS.md`, `constitution.md`, `ROADMAP.md`, and `.claude/lessons.md` to classify the change.
 3. The skill returns a routing summary: which files/specs will be touched, which edits are immediate (specs, plans, tasks, ADR drafts, ROADMAP) and which are deferred (AGENTS.md, CLAUDE.md, constitution.md, integration configs).
 4. Print the routing summary to the user and ask `Apply? [y/n]`. On `n`, stop and write nothing.
-5. On `y`, let the skill execute immediate writes and append deferred entries to `.claude/pending-changes.md` with timestamp, target file, proposed content, and source `/evolve "<change>"`.
-6. Print the final report block: "Applied immediately: ..." and "Deferred to .claude/pending-changes.md (N entries): ...". Remind the user to run `/curate` after `/ship` to apply deferred changes.
+5. On `y`, let the skill execute immediate writes and append deferred entries to `.claude/pending-changes.md` with timestamp, target file, proposed content, and source `/sf:evolve "<change>"`.
+6. Print the final report block: "Applied immediately: ..." and "Deferred to .claude/pending-changes.md (N entries): ...". Remind the user to run `/sf:curate` after `/sf:ship` to apply deferred changes.
 
 ## Arguments
 

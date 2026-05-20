@@ -3,7 +3,7 @@ description: Author or refresh plan.md for a named spec — technical approach, 
 argument-hint: "<category>/<NNN>"
 ---
 
-# /plan
+# /sf:plan
 
 Draft or refresh `plan.md` for an existing spec — technical approach, files touched, sequencing, risks.
 
@@ -26,4 +26,4 @@ Draft or refresh `plan.md` for an existing spec — technical approach, files to
 
 ## Output
 
-`specs/<category>/<NNN>-*/plan.md` rewritten with the four sections filled. Console prints the path and final line count.
+`specs/<category>/<NNN>-*/sf:plan.md` rewritten with the four sections filled. Console prints the path and final line count.

@@ -42,8 +42,8 @@ For cases where you want background sync on commits without a live session.
 Behavior:
 - On spec creation, `tasks.md` is pushed as rows into the configured Notion database.
 - When `sync_mode = "realtime"`, a GitHub Action runs on every commit that touches a spec and updates matching rows.
-- When `sync_mode = "manual"`, sync only runs when you invoke `/sync-notion`.
-- `/ship` marks associated Notion rows as complete.
+- When `sync_mode = "manual"`, sync only runs when you invoke `/sf:sync-notion`.
+- `/sf:ship` marks associated Notion rows as complete.
 
 ## Picking a mode
 

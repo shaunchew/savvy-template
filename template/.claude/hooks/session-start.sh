@@ -2,9 +2,9 @@
 set -euo pipefail
 IFS=$'\n\t'
 # session-start.sh — deterministic context loading. SessionStart hook.
-#   1. Detects .claude/intake-input.md and signals /intake.
+#   1. Detects .claude/intake-input.md and signals /sf:intake.
 #   2. Prints framework version + variant from .claude/config.toml.
-#   3. Reports pending-changes count awaiting /curate.
+#   3. Reports pending-changes count awaiting /sf:curate.
 #   4. Detects scratchpad-mode by CWD and reminds Claude framework machinery is inert.
 
 # Drain stdin so the caller doesn't block.
@@ -28,7 +28,7 @@ root="$(find_root)"
 # 1. Intake-input detection — deterministic replacement for the CLAUDE.md instruction.
 intake_input="$root/.claude/intake-input.md"
 if [ -f "$intake_input" ]; then
-  printf 'session-start.sh: .claude/intake-input.md detected. Run /intake --from-file .claude/intake-input.md to bootstrap.\n' >&2
+  printf 'session-start.sh: .claude/intake-input.md detected. Run /sf:intake --from-file .claude/intake-input.md to bootstrap.\n' >&2
 fi
 
 # 2. Framework version + variant banner.
@@ -47,7 +47,7 @@ if [ -f "$pending" ]; then
   entries="$(grep -c '^> \*\*20' "$pending" 2>/dev/null || true)"
   entries="${entries:-0}"
   if [ "$entries" -gt 0 ]; then
-    printf 'session-start.sh: %s pending change(s) awaiting /curate.\n' "$entries" >&2
+    printf 'session-start.sh: %s pending change(s) awaiting /sf:curate.\n' "$entries" >&2
   fi
 fi
 
