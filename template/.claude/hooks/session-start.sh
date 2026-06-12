@@ -60,4 +60,55 @@ case "$PWD" in
     ;;
 esac
 
+# 5. Framework update nudge — cached, non-blocking, fully silent on any failure.
+#    Compares the local version against a cached "latest" marker and points to
+#    /sf:upgrade when newer. The remote check runs in the background (detached) and
+#    only updates the cache for the NEXT session, so session start never blocks on
+#    the network. Projects with no cache simply get the nudge one session later.
+update_nudge() {
+  [ -n "${version:-}" ] || return 0          # no local version known → nothing to compare
+  local cache="$root/.claude/.savvy-update-cache"
+  local manifest_url="https://raw.githubusercontent.com/shaunchew/savvy-template/main/template/.claude/.savvy-manifest.json"
+  local now latest checked age
+  now="$(date +%s)"
+
+  # Read cached latest version + last-checked epoch, if present.
+  if [ -f "$cache" ]; then
+    latest="$(grep -E '^latest=' "$cache" 2>/dev/null | head -1 | cut -d= -f2)"
+    checked="$(grep -E '^checked=' "$cache" 2>/dev/null | head -1 | cut -d= -f2)"
+  fi
+
+  # Print the nudge if the cached latest is strictly newer than local.
+  if [ -n "${latest:-}" ] && version_gt "$latest" "$version"; then
+    printf 'session-start.sh: framework update available (v%s → v%s). Run /sf:upgrade to review.\n' "$version" "$latest" >&2
+  fi
+
+  # Refresh the cache in the background if stale (>24h) or missing, and curl exists.
+  age=$(( now - ${checked:-0} ))
+  if [ "$age" -ge 86400 ] && command -v curl >/dev/null 2>&1; then
+    nohup sh -c '
+      v="$(curl -fsSL --max-time 3 "'"$manifest_url"'" 2>/dev/null \
+            | grep -o "\"version\"[[:space:]]*:[[:space:]]*\"[^\"]*\"" \
+            | head -1 | sed -E "s/.*\"([^\"]+)\"$/\1/")"
+      [ -n "$v" ] && printf "latest=%s\nchecked=%s\n" "$v" "'"$now"'" > "'"$cache"'"
+    ' >/dev/null 2>&1 &
+  fi
+}
+
+# Semver-ish compare: returns 0 (true) if $1 > $2. Pads missing components with 0.
+version_gt() {
+  local a b i av bv
+  IFS='.' read -r -a a <<< "${1%%[!0-9.]*}"
+  IFS='.' read -r -a b <<< "${2%%[!0-9.]*}"
+  for i in 0 1 2; do
+    av="${a[i]:-0}"; bv="${b[i]:-0}"
+    av="${av:-0}"; bv="${bv:-0}"
+    if [ "$av" -gt "$bv" ] 2>/dev/null; then return 0; fi
+    if [ "$av" -lt "$bv" ] 2>/dev/null; then return 1; fi
+  done
+  return 1
+}
+
+update_nudge || true
+
 exit 0

@@ -24,6 +24,24 @@ if [ ! -f "$ROOT/.claude-plugin/plugin.json" ]; then
   exit 1
 fi
 
+# Regenerate the ownership manifest first so the materialized plugin and the
+# template ship the same hashes for this version.
+if [ -x "$ROOT/scripts/gen-manifest.sh" ]; then
+  "$ROOT/scripts/gen-manifest.sh"
+else
+  printf 'build-plugin.sh: scripts/gen-manifest.sh missing or not executable. Aborting.\n' >&2
+  exit 1
+fi
+
+# Stamp the plugin manifest version from the single source of truth.
+if [ -f "$ROOT/VERSION" ] && command -v jq >/dev/null 2>&1; then
+  VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
+  tmp_pj="$(mktemp)"
+  jq --arg v "$VERSION" '.version = $v' "$ROOT/.claude-plugin/plugin.json" > "$tmp_pj" \
+    && mv "$tmp_pj" "$ROOT/.claude-plugin/plugin.json"
+  printf 'build-plugin.sh: stamped plugin.json version=%s from VERSION.\n' "$VERSION" >&2
+fi
+
 # Remove previous materialization (keep manifest).
 for dir in skills commands hooks agents; do
   if [ -d "$ROOT/.claude-plugin/$dir" ]; then
@@ -38,6 +56,13 @@ for dir in skills commands hooks agents; do
     printf 'build-plugin.sh: materialized .claude-plugin/%s/ from template/.claude/%s/\n' "$dir" "$dir" >&2
   fi
 done
+
+# Ship the ownership manifest with the plugin so `/sf:upgrade` can resolve a
+# target release from an installed plugin (not just the remote).
+if [ -f "$ROOT/template/.claude/.savvy-manifest.json" ]; then
+  cp "$ROOT/template/.claude/.savvy-manifest.json" "$ROOT/.claude-plugin/.savvy-manifest.json"
+  printf 'build-plugin.sh: copied .savvy-manifest.json into .claude-plugin/.\n' >&2
+fi
 
 # Strip Copier placeholders from any *.toml or *.md inside the plugin layout.
 # Plugin install paths can't render Jinja, so any unresolved {{ ... }} would be a bug.

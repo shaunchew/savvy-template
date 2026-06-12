@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-06-12
+
+### Added
+- **Manifest-driven safe upgrades.** New `.claude/.savvy-manifest.json` records every framework file with a `sha256` and an ownership `policy` (`managed` / `merge` / `seeded`). This is the map that lets updates distinguish framework code (safe to refresh), files you locally edited (conflict — never silently overwritten), and your own work (specs/docs/context files — never touched).
+- `/sf:upgrade` command + `framework-upgrade` skill — diffs the project against a newer release (explicit path → installed plugin → remote), prints an add/refresh/conflict/merge/migrations plan, and applies only on confirmation. Conflicts land as `<path>.savvy-new` beside untouched originals. Projects with no manifest (anything before v1.4.0) upgrade safely via conservative mode.
+- `scripts/gen-manifest.sh` — generates the ownership manifest; Jinja-bearing files are auto-excluded from `managed` to avoid false conflicts.
+- `VERSION` file as the single source of truth; `build-plugin.sh` stamps `plugin.json` and the manifest from it.
+- Cached, non-blocking framework-update nudge in `session-start.sh` — points to `/sf:upgrade` when a newer version is available; silent offline.
+
+### Changed
+- `framework-linter` now reports framework-version drift and locally-modified `managed` files (check 5b).
+- `release-gate` regenerates the manifest and re-stamps versions on every framework release.
+- Version drift fixed: `config.toml`, `plugin.json`, and `VERSION` now all read `1.4.0` (was `1.3` / `1.1.0`).
+
 ## [1.3.0] — 2026-05-20
 
 ### Added

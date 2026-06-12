@@ -2,6 +2,12 @@
 
 Shape A migration scripts: per-patch idempotent fixes that already-scaffolded projects can pull and apply without relying on `copier update` or `.copier-answers.yml`.
 
+## Relationship to `/sf:upgrade` (since v1.4.0)
+
+As of v1.4.0 the primary update path is **`/sf:upgrade`**, driven by the ownership manifest (`.claude/.savvy-manifest.json`). It handles the common cases automatically by content hash: adding new framework files and refreshing unmodified `managed` files, while never touching `seeded` project data and never silently overwriting framework files you edited.
+
+Migration scripts here are now reserved for genuine **transforms** that a file-replace cannot express — e.g. rewriting the shape of an existing `settings.json` hook (`v1.0.1.sh`) or removing orphaned files left by a rename (`v1.3.0.sh`). `/sf:upgrade` discovers in-range scripts and runs them as the final step of an upgrade. They remain runnable standalone via the `curl | bash` one-liner for projects not using `/sf:upgrade`.
+
 ## When a migration ships
 
 Every release that changes framework-managed files in a way that affects existing projects ships a corresponding script here. Releases that only change scaffold behavior (e.g., post-copy task messages) do not need one — they take effect at the next scaffold.
@@ -37,6 +43,11 @@ bash /tmp/migrate.sh
 |---|---|
 | `v1.0.1.sh` | Wraps `.claude/settings.json` `Stop` hook in the `{matcher, hooks: [...]}` envelope. Fixes Claude Code's `hooks › Stop › 0 › hooks: Expected array, but received undefined` validation error. |
 | `v1.3.0.sh` | Removes orphaned flat `.claude/commands/*.md` files left behind after commands moved into the namespaced `.claude/commands/sf/*.md` (invoked as `/sf:<name>`). Run after `copier update`. |
+| `v1.4.0.sh` | Bootstraps a pre-v1.4.0 project onto the manifest-driven upgrade system: installs `/sf:upgrade` (command + skill) and the ownership baseline manifest matching the project's current version (from `migrations/baselines/`). After this, use `/sf:upgrade` for all future updates. |
+
+## Baselines (`migrations/baselines/`)
+
+`baselines/v<version>.json` are retroactive `.savvy-manifest` snapshots of shipped releases that predate the manifest system. The `v1.4.0.sh` bootstrap installs the one matching a project's current version so the first `/sf:upgrade` can distinguish "framework file you never edited → safe to refresh" from "framework file you edited → conflict." Regenerate with `scripts/gen-baseline-from-tag.sh v<version>` (reads the git tag, no checkout). Going forward every release ships its manifest in-tree, so no new baselines are needed.
 
 ## Authoring a new migration
 

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin.json",
   "name": "savvy-framework",
-  "version": "1.1.0",
-  "description": "Self-policing AI-dev framework for solo developers. 10 framework skills, 27 /sf: slash commands, 5 hooks, 3 canonical subagents. Spec-driven workflow, scratchpad-mode, legacy-archival.",
+  "version": "1.4.0",
+  "description": "Self-policing AI-dev framework for solo developers. 11 framework skills, 28 /sf: slash commands, 5 hooks, 3 canonical subagents. Spec-driven workflow, scratchpad-mode, legacy-archival, manifest-driven safe upgrades.",
   "author": {
     "name": "Shaun Chew",
     "email": "scwj1210@gmail.com"

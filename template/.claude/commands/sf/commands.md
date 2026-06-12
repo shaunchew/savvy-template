@@ -28,7 +28,7 @@ Print the complete catalogue of savvy-framework slash commands shipped with this
 
 **Scratchpads** — `/sf:scratchpad`, `/sf:scratchpad-exit`, `/sf:scratchpad-list`, `/sf:promote-scratchpad`, `/sf:archive-scratchpad`
 
-**Legacy & migration** — `/sf:legacy-review`
+**Legacy & migration** — `/sf:legacy-review`, `/sf:upgrade`
 
 **Integrations** — `/sf:sync-notion`
 
