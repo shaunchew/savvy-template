@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+- **Distribution rearchitecture — Phase 1 (authorship inversion).** The engine now ships as a Claude Code plugin named `sf` whose authored source of truth is the repo-root payload (`commands/` flat → `/sf:<cmd>`, `skills/<name>/SKILL.md`, `hooks/{*.sh,hooks.json}`, `agents/`, `.claude-plugin/{plugin.json,marketplace.json}`). Installs land out-of-tree, so engine updates can never touch project files, and `/plugin update sf@savvy` is version-gated. `scripts/build-plugin.sh` is reversed: it now reverse-generates the legacy in-tree engine under `template/.claude/` from the root payload (kept for pre-plugin projects until the Phase 3 cutover) and gates on a `VERSION`/`config.toml` version mismatch.
+- `plugin.json` name `savvy-framework` → `sf`; `repository` is now a string (object form fails `claude plugin validate`); `marketplace.json` authored (marketplace `savvy`, plugin source `.`).
+
+### Fixed
+- `session-start.sh` guarded against `set -o pipefail` aborting the hook when `config.toml` lacks a `version` line; added a coexistence detector that warns once when the `sf` plugin and an in-tree engine both run.
+- `secret-scan.sh` private-key regex used a trailing empty alternative `(RSA |…|)` that `ugrep` rejects, so RSA private keys passed unblocked; fixed to `((RSA|EC|OPENSSH|DSA|PGP) )?`.
+
+### Docs
+- ADR `docs/decisions/0001-engine-as-plugin.md`, executed Phase 0 gate `docs/distribution/phase-0-gate.md` (GO), and red-team record. README plugin-install section corrected (no `gh:` path; real marketplace flow).
+
 ## [1.4.0] — 2026-06-12
 
 ### Added

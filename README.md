@@ -114,19 +114,19 @@ See [`docs/PLAN.md`](docs/PLAN.md) for the full specification.
 
 v1.0 — Ready to scaffold. See `docs/PLAN.md` §15 for the rollout plan.
 
-## Plugin install (alternative distribution)
+## Plugin install (engine distribution)
 
-Beyond the Copier scaffold, the framework is also installable as a Claude Code plugin so its skills/commands/hooks/agents land in any repo without re-scaffolding.
+The engine (skills / commands / hooks / agents) ships as a Claude Code plugin named `sf`. The authored source of truth is the repo-root payload (`commands/`, `skills/`, `hooks/`, `agents/`, `.claude-plugin/`); installs land out-of-tree in `~/.claude/plugins`, so updating the engine can never touch your project files. Distribution is marketplace-mediated — there is no `gh:` install path.
 
 ```bash
-# Build the plugin layout from template/.claude/ (run once per release).
-./scripts/build-plugin.sh
-
-# In any repo:
-/plugin install gh:shaunchew/savvy-template
+# In any repo (real flow, two steps):
+/plugin marketplace add shaunchew/savvy-template
+/plugin install sf@savvy
 ```
 
-Use Copier for new projects (gets you the full spec/docs/integrations structure). Use the plugin when you want the framework skills/commands in an existing repo without changing its file layout.
+Updates are version-gated: `/plugin update sf@savvy` is a no-op until `plugin.json`'s version changes, so a pinned project is immune to newer engine releases until it deliberately updates.
+
+`scripts/build-plugin.sh` is a release-time step (not an install step): it stamps the version from `VERSION`, regenerates the ownership manifest, and reverse-generates the legacy in-tree engine under `template/.claude/` from the root payload (kept until the Phase 3 cutover for projects scaffolded before the plugin era).
 
 ## Patching an existing scaffold
 
