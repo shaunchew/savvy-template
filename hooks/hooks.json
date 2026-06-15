@@ -1,0 +1,50 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'r=\"${CLAUDE_PLUGIN_ROOT:-}\"; { [ -n \"$r\" ] && [ -f \"$r/hooks/session-start.sh\" ]; } || r=\"$(ls -d \"$HOME\"/.claude/plugins/cache/*/sf/*/ 2>/dev/null | sort -V | tail -1)\"; exec \"$r/hooks/session-start.sh\"'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'r=\"${CLAUDE_PLUGIN_ROOT:-}\"; { [ -n \"$r\" ] && [ -f \"$r/hooks/session-end.sh\" ]; } || r=\"$(ls -d \"$HOME\"/.claude/plugins/cache/*/sf/*/ 2>/dev/null | sort -V | tail -1)\"; exec \"$r/hooks/session-end.sh\"'"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'r=\"${CLAUDE_PLUGIN_ROOT:-}\"; { [ -n \"$r\" ] && [ -f \"$r/hooks/secret-scan.sh\" ]; } || r=\"$(ls -d \"$HOME\"/.claude/plugins/cache/*/sf/*/ 2>/dev/null | sort -V | tail -1)\"; exec \"$r/hooks/secret-scan.sh\"'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'r=\"${CLAUDE_PLUGIN_ROOT:-}\"; { [ -n \"$r\" ] && [ -f \"$r/hooks/format.sh\" ]; } || r=\"$(ls -d \"$HOME\"/.claude/plugins/cache/*/sf/*/ 2>/dev/null | sort -V | tail -1)\"; exec \"$r/hooks/format.sh\"'"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'r=\"${CLAUDE_PLUGIN_ROOT:-}\"; { [ -n \"$r\" ] && [ -f \"$r/hooks/bloat-check.sh\" ]; } || r=\"$(ls -d \"$HOME\"/.claude/plugins/cache/*/sf/*/ 2>/dev/null | sort -V | tail -1)\"; exec \"$r/hooks/bloat-check.sh\"'"
+          }
+        ]
+      }
+    ]
+  }
+}
