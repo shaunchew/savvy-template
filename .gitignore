@@ -9,4 +9,6 @@ __pycache__/
 dist/
 build/
 .copier-answers.yml
-HANDOVER.md
+# Only the framework's own working handover at the repo root — NOT the template/ or
+# plugin skeleton/ seed copies, which must ship.
+/HANDOVER.md
