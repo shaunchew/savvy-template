@@ -122,6 +122,39 @@ version_gt() {
   return 1
 }
 
-update_nudge || true
+# 6. Engine version stamp (plugin mode only). When running as the sf plugin, read the
+#    plugin's own version, record it at .claude/.savvy-engine-version (so the project can
+#    see which engine served it), and warn if the project's config.toml declares a
+#    compatibility floor newer than the installed engine. Replaces the remote /sf:upgrade
+#    nudge for plugin-based projects — engine updates flow through /plugin update, not a
+#    project-tree fetch.
+version_stamp() {
+  local proot="${CLAUDE_PLUGIN_ROOT:-}"
+  [ -n "$proot" ] || return 0
+  local pj="$proot/.claude-plugin/plugin.json"
+  [ -f "$pj" ] || return 0
+  local engine_ver
+  engine_ver="$(grep -E '"version"' "$pj" 2>/dev/null | head -1 | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/' || true)"
+  [ -n "${engine_ver:-}" ] || return 0
+
+  local stamp="$root/.claude/.savvy-engine-version"
+  if [ -d "$root/.claude" ]; then
+    printf '%s\n' "$engine_ver" > "$stamp" 2>/dev/null || true
+  fi
+
+  # Compatibility floor: if config.toml's framework version is NEWER than the installed
+  # engine, the project expects a newer engine than is loaded — warn (non-blocking).
+  if [ -n "${version:-}" ] && version_gt "$version" "$engine_ver"; then
+    printf 'session-start.sh: ⚠ engine v%s is OLDER than this project'\''s floor v%s. Run /plugin update sf@savvy.\n' "$engine_ver" "$version" >&2
+  fi
+}
+
+# Dispatch: plugin-mode projects get the version stamp; legacy in-tree projects keep the
+# remote /sf:upgrade nudge (retired at the Phase 3 cutover).
+if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
+  version_stamp || true
+else
+  update_nudge || true
+fi
 
 exit 0

@@ -86,6 +86,39 @@ cp "$ROOT"/agents/*.md "$T/agents/"
 
 printf 'build-plugin.sh: reverse-generated template/.claude/{commands,skills,hooks,agents} from root payload.\n' >&2
 
+# --- 3b. generate the embedded adoption skeleton under skeleton/ from template/ ---
+# /sf:adopt seeds these create-if-absent into a project. Jinja is substituted to plain
+# defaults; project-specific tokens are left as __PROJECT_NAME__/__PROJECT_DESCRIPTION__
+# for sf-adopt to fill at seed time.
+SK="$ROOT/skeleton"
+rm -rf "$SK"; mkdir -p "$SK/.claude/hooks"
+jinja_strip() { # $1=src $2=dst
+  sed -E \
+    -e 's/\{\{[[:space:]]*project_name[[:space:]]*\}\}/__PROJECT_NAME__/g' \
+    -e 's/\{\{[[:space:]]*project_description[[:space:]]*\}\}/__PROJECT_DESCRIPTION__/g' \
+    -e 's/\{\{[[:space:]]*variant[[:space:]]*\}\}/solo/g' \
+    -e 's/\{\{[[:space:]]*github_username[[:space:]]*\}\}/shaunchew/g' \
+    -e 's/\{\{[[:space:]]*include_[a-z_]+_integration[[:space:]]*\|[[:space:]]*lower[[:space:]]*\}\}/false/g' \
+    "$1" > "$2"
+}
+for f in AGENTS.md CLAUDE.md constitution.md ROADMAP.md HANDOVER.md README.md; do
+  [ -f "$ROOT/template/$f" ] && jinja_strip "$ROOT/template/$f" "$SK/$f"
+done
+for f in config.toml lessons.md pending-changes.md; do
+  [ -f "$ROOT/template/.claude/$f" ] && jinja_strip "$ROOT/template/.claude/$f" "$SK/.claude/$f"
+done
+# Reduced floor-guard settings.json: keep permissions + ONLY the PreToolUse secret-scan
+# floor guard (security survives even when the plugin is absent); other 4 hooks plugin-only.
+jq '{permissions: .permissions} + {hooks: {PreToolUse: (.hooks.PreToolUse // [])}}' \
+  "$ROOT/template/.claude/settings.json" > "$SK/.claude/settings.json"
+# The floor guard needs its script in-tree.
+cp "$ROOT/hooks/secret-scan.sh" "$SK/.claude/hooks/secret-scan.sh"
+chmod +x "$SK/.claude/hooks/secret-scan.sh"
+if grep -rE '\{\{|\{%' "$SK" 2>/dev/null | head -5; then
+  printf 'build-plugin.sh: WARNING — residual Jinja in skeleton/.\n' >&2
+fi
+printf 'build-plugin.sh: generated embedded adoption skeleton under skeleton/.\n' >&2
+
 # Ship the manifest with the plugin so an installed engine can resolve legacy upgrades.
 if [ -f "$T/.savvy-manifest.json" ]; then
   cp "$T/.savvy-manifest.json" "$ROOT/.claude-plugin/.savvy-manifest.json"

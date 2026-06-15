@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+- **`/sf:adopt` (Phase 2).** One command to adopt any repo onto the `sf` plugin engine: seeds the skeleton create-if-absent, additively merges `permissions.deny`, keeps an in-tree secret-scan floor guard, **detaches** any legacy in-tree engine (removes known engine files individually + strips the 4 framework hook wirings, backing up `settings.json` to `.savvy-old`), and enables `sf@savvy` at project scope. Backed by the tested `scripts/sf-adopt.sh` (git-guarded, idempotent, create-if-absent). The plugin embeds a generated `skeleton/` (Jinja-stripped from `template/`).
+- Session-start engine version stamp (plugin mode): writes `.claude/.savvy-engine-version` and warns when the installed engine is older than the project's `config.toml` floor; legacy in-tree projects keep the `/sf:upgrade` nudge.
+
 ### Changed
 - **Distribution rearchitecture — Phase 1 (authorship inversion).** The engine now ships as a Claude Code plugin named `sf` whose authored source of truth is the repo-root payload (`commands/` flat → `/sf:<cmd>`, `skills/<name>/SKILL.md`, `hooks/{*.sh,hooks.json}`, `agents/`, `.claude-plugin/{plugin.json,marketplace.json}`). Installs land out-of-tree, so engine updates can never touch project files, and `/plugin update sf@savvy` is version-gated. `scripts/build-plugin.sh` is reversed: it now reverse-generates the legacy in-tree engine under `template/.claude/` from the root payload (kept for pre-plugin projects until the Phase 3 cutover) and gates on a `VERSION`/`config.toml` version mismatch.
 - `plugin.json` name `savvy-framework` → `sf`; `repository` is now a string (object form fails `claude plugin validate`); `marketplace.json` authored (marketplace `savvy`, plugin source `.`).
