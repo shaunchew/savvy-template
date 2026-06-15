@@ -1,8 +1,9 @@
 # Phase 0 Gate — Plugin Distribution PROVE Step
 
-Status: **BLOCKING GATE**. Phase 1 (authorship inversion) MUST NOT begin until this
-gate returns GO. Nothing is deleted in Phase 0 — this step only *proves* that the
-out-of-tree plugin mechanism works end to end on a throwaway repo.
+Status: **EXECUTED 2026-06-15 → GO (headless scope).** Phase 1 (authorship inversion)
+is unblocked. Nothing was deleted in Phase 0 — this step only *proved* that the
+out-of-tree plugin mechanism works end to end on a throwaway repo. See the
+**Gate result** section at the foot of this file for the filled matrix and evidence.
 
 Plan reference: "THE LOCKED PLAN (savvy-framework distribution rearchitecture, 2026-06-15)",
 Phase 0 + the 13 amendments + the 11-row Phase 0 matrix.
@@ -165,3 +166,63 @@ The fallback path is:
    version-gating cannot be enforced), that is a plan-level finding — re-open the
    architecture decision rather than working around it, since these are the premises the
    destructive Phase 3 depends on.
+
+---
+
+## Gate result — executed 2026-06-15 (CC 2.1.177)
+
+**Verdict: GO (headless scope).** A corrected `sf` plugin was built in `/tmp/sf-gate`
+(sandboxed; real repo and real `~/.claude` never touched) and proved against the real
+`claude plugin` CLI in an isolated `HOME`/`CLAUDE_CONFIG_DIR`. Key discovery: the
+`claude plugin` subcommands (`marketplace add`, `install`, `list`, `update`,
+`--scope project`) are fully scriptable non-interactively — so all but one row was
+proven without a TUI.
+
+| Row | Verdict | Evidence |
+|-----|---------|----------|
+| T1 install | PASS | `validate` ok; `marketplace add` ok; `install sf@savvy` ok; `list` → ENABLED |
+| T2 non-empty clone | PASS | fresh clone: 11 SKILL.md, 28 commands, 3 agents (no `.gitkeep`), `hooks.json`+5 scripts, `marketplace.json`; 0 `_framework/`, 0 `commands/sf/` |
+| T3 `/sf:` namespace | PASS (by construction) | name=`sf`, flat `commands/` → `/sf:<cmd>`; layout accepted; payload materialized at version root |
+| T4 hooks fire | PASS (effects) | secret-scan AKIA/RSA → exit 2; bloat-check hard → exit 2; single banners. Residual: live "exactly once per lifecycle event" |
+| T5 survive env-unset | PASS | `hooks.json` resolver tier-1 (var set) AND tier-3 (var UNSET, glob belt) both resolve; 5 scripts run env-unset from a foreign CWD |
+| T6 double-fire | DIAGNOSTIC | confirmed by construction: plugin self-locating command ≠ in-tree project-relative command → dedup-by-exact-string cannot collapse → both fire |
+| T7 coexistence warning | PASS | detector fires when in-tree engine present, silent otherwise; remote curl nudge removed |
+| T8 version-gate | PASS | no bump → `update` reports "already at latest", change NOT absorbed; bump + `marketplace update savvy` + `update sf@savvy` → 1.4.0→1.5.0 applied; per-version immutable dirs |
+| T9 sha-pin freeze | N/A | CC 2.1.177 REJECTS sha-pinned sources ("source type your Claude Code version does not support"). Advisory — T8 explicit-semver gating is the freeze mechanism |
+| T10 project scope | PASS | `--scope project` → `enabledPlugins` in project `./.claude/settings.json` only; user settings `null`; ENABLED in-project, DISABLED from other dirs |
+| T11 name stability | PASS | name-set sha256 identical across a 1.4.0→9.9.9 bump (39 names); skills frontmatter-named, commands filename-named, version-independent |
+
+Decision rule (GO requires T1∧T2∧T3∧T4∧T5∧T8∧T7 PASS + T6 diagnostic): **met.**
+
+### Empirical corrections to the plan (learned from the run)
+
+- Install path is `~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/`; payload
+  (`commands/skills/hooks/agents`) materializes at the **version root**, manifests in its
+  `.claude-plugin/`. The `source: "."` repo-root layout is the proven one.
+- `plugin.json` `repository` MUST be a **string** — the object form fails
+  `claude plugin validate` ("repository: expected string, received object").
+- `claude plugin update` needs the `sf@savvy` ref (bare `sf` errors "not found") AND a
+  preceding `claude plugin marketplace update savvy` to see a new version.
+- sha-pinned sources are unsupported on CC 2.1.177 → **T9 is not available**; rely on T8.
+
+### Bugs found and fixed in the proven artifact
+
+1. `repository` object → string (broke `plugin validate`).
+2. `session-start.sh` tripped `set -euo pipefail` → exit 1 when `config.toml` lacked a
+   `version =` line; guarded the grep|head|sed pipelines with `|| true`.
+3. `secret-scan.sh` private-key regex used a trailing empty alternative `(RSA |…|)`
+   rejected by ugrep 7.5.0 → RSA keys passed with exit 0; fixed to
+   `((RSA|EC|OPENSSH|DSA|PGP) )?`.
+4. `hooks.json` tier-3 resolver glob corrected to the real cache path
+   `~/.claude/plugins/cache/*/sf/*/`.
+
+### Residual (one live-TUI observation, low risk)
+
+Open a real Claude Code session with the plugin installed and confirm the 5 hooks fire
+exactly once (twice on a coexisting repo). Effects and resolution are already proven:
+
+```
+claude plugin marketplace add <repo-or-path>
+claude plugin install sf@savvy
+claude --debug   # SessionStart ×1; edit → format+bloat; Bash w/ AKIA → blocked; turn end → Stop
+```
