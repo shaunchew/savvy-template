@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.5.0] — 2026-07-03
+
 ### Added
 - **Zero-dependency test suite** (`tests/`): pure-bash runner (bash 3.2 compatible; needs only `git` + `jq`) with 200+ assertions covering adopt (greenfield / brownfield / detach / idempotency / guards / dry-run), eject round-trips, doctor verdicts, build determinism + generated-artifact drift, manifest integrity, and hook contracts (secret-scan block/allow, adoption gating, session hooks).
 - **CI** (`.github/workflows/ci.yml`): test suite on ubuntu (bash 5) and macOS (system bash 3.2), shellcheck error gate, plugin-payload JSON/version integrity, soft version-bump reminder. Tag-triggered `release.yml` verifies tag ↔ VERSION ↔ plugin.json ↔ CHANGELOG agreement, runs the suite, checks artifact drift, and publishes the GitHub Release from the CHANGELOG section.

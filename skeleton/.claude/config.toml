@@ -3,7 +3,7 @@
 # config.toml under .claude/integrations/<name>/ with credentials/settings.
 
 [framework]
-version = "1.4.0"
+version = "1.5.0"
 variant = "solo"
 
 [integrations]

@@ -1,6 +1,6 @@
 {
   "framework": "savvy-framework",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "generated": "2026-07-03",
   "files": [
     { "path": ".claude/agents/.gitkeep", "policy": "seeded", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
@@ -38,7 +38,7 @@
     { "path": ".claude/commands/sf/tasks.md", "policy": "managed", "sha256": "6da6d2a4a4cf09908f2a7ed8769a9164c7303263589b9f0de23725106b12e55d" },
     { "path": ".claude/commands/sf/tutorial.md", "policy": "managed", "sha256": "f72f15eb567b429b26d74fa87ce6e2050be5bbd63a6a135ff8da46984339797b" },
     { "path": ".claude/commands/sf/upgrade.md", "policy": "managed", "sha256": "17f028e2e9292380707b92f0c797c81c321ff203b0e4cede5a4ae9bb092000f3" },
-    { "path": ".claude/config.toml", "policy": "merge", "sha256": "1e425490d2f61cf14d23a33cdd81b4b2badbb8620736eee0e407edc091a9e24b" },
+    { "path": ".claude/config.toml", "policy": "merge", "sha256": "661e8fdc588b178eb26b57219270f49e37d9d6229722757d369a5dcf363d1207" },
     { "path": ".claude/hooks/bloat-check.sh", "policy": "managed", "sha256": "242c82839342ff4378d601409d62fa4d2812118cf3816a300d4b0bc7118008db" },
     { "path": ".claude/hooks/format.sh", "policy": "managed", "sha256": "c3ac27756302f5f0fd01d671756d2a8e9f08929ac57f06ece785c949cedfe13a" },
     { "path": ".claude/hooks/secret-scan.sh", "policy": "managed", "sha256": "9865748e0e99c7dcbec9b80a5028203b29caced6e9d5616b4f7a19cbc7915c38" },
