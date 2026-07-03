@@ -137,8 +137,10 @@ version_stamp() {
   engine_ver="$(grep -E '"version"' "$pj" 2>/dev/null | head -1 | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/' || true)"
   [ -n "${engine_ver:-}" ] || return 0
 
+  # Stamp ONLY adopted framework projects (config.toml present). A bare .claude/
+  # dir is any Claude Code user's project — the plugin must never write into it.
   local stamp="$root/.claude/.savvy-engine-version"
-  if [ -d "$root/.claude" ]; then
+  if [ -f "$root/.claude/config.toml" ]; then
     printf '%s\n' "$engine_ver" > "$stamp" 2>/dev/null || true
   fi
 

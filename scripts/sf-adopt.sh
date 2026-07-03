@@ -54,14 +54,24 @@ else
 fi
 
 PROJ_NAME="$(basename "$PROJECT")"
+# Escape sed-replacement metacharacters (&, \, delimiter) so a project dir like
+# "app&api" cannot corrupt seeded file content.
+PROJ_NAME_SED="$(printf '%s' "$PROJ_NAME" | sed -e 's/[\\/&]/\\&/g')"
 created=(); skipped=(); detached=()
+
+# --- pre-flight: an existing settings.json must be valid JSON, or we abort BEFORE
+# touching anything (a mid-run jq failure would leave a half-adopted project). ---
+if [ -f "$PROJECT/.claude/settings.json" ] && ! jq -e . "$PROJECT/.claude/settings.json" >/dev/null 2>&1; then
+  printf 'sf-adopt.sh: %s/.claude/settings.json is not valid JSON. Fix it first — nothing was changed. Aborting.\n' "$PROJECT" >&2
+  exit 1
+fi
 
 # --- 1. seed skeleton CREATE-IF-ABSENT ---
 seed_file() { # $1=relpath under skeleton
   local rel="$1" src="$SK/$1" dst="$PROJECT/$1"
   if [ -e "$dst" ]; then skipped+=("$rel"); return 0; fi
   mkdir -p "$(dirname "$dst")"
-  sed -e "s/__PROJECT_NAME__/$PROJ_NAME/g" \
+  sed -e "s/__PROJECT_NAME__/$PROJ_NAME_SED/g" \
       -e "s/__PROJECT_DESCRIPTION__/TODO: one-line project description./g" \
       "$src" > "$dst"
   [ "${rel##*.}" = "sh" ] && chmod +x "$dst"
@@ -87,16 +97,27 @@ if [ ! -f "$SETTINGS" ]; then
   cp "$SK/.claude/settings.json" "$SETTINGS"
   created+=(".claude/settings.json")
 else
-  cp "$SETTINGS" "$SETTINGS.savvy-old"
   # union deny rules; ensure a PreToolUse:Bash secret-scan floor-guard entry exists.
+  merged_tmp="$(mktemp)"
   jq --slurpfile sk "$SK/.claude/settings.json" '
     .permissions.deny = ((.permissions.deny // []) + ($sk[0].permissions.deny // []) | unique)
     | (.hooks.PreToolUse // []) as $pre
     | if ([ $pre[]?.hooks[]?.command // "" ] | any(test("secret-scan\\.sh")))
       then .
       else .hooks.PreToolUse = ($pre + $sk[0].hooks.PreToolUse) end
-  ' "$SETTINGS.savvy-old" > "$SETTINGS"
-  detached+=("merged permissions.deny + ensured secret-scan floor (backup: settings.json.savvy-old)")
+  ' "$SETTINGS" > "$merged_tmp"
+  # Idempotency: rewrite (and back up) ONLY when the merge changes something.
+  # Compare canonically — deny is a set, so order-insensitive.
+  canon() { jq -S '(.permissions.deny // []) |= sort' "$1"; }
+  if [ "$(canon "$merged_tmp")" = "$(canon "$SETTINGS")" ]; then
+    rm -f "$merged_tmp"
+  else
+    # Keep-FIRST backup: .savvy-old is the true pre-adopt snapshot; a re-adopt
+    # must never overwrite it with an already-framework-touched version.
+    [ -f "$SETTINGS.savvy-old" ] || cp "$SETTINGS" "$SETTINGS.savvy-old"
+    mv "$merged_tmp" "$SETTINGS"
+    detached+=("merged permissions.deny + ensured secret-scan floor (backup: settings.json.savvy-old)")
+  fi
 fi
 
 # --- 3. DETACH in-tree engine, if present ---
@@ -158,8 +179,8 @@ if [ -f "$SETTINGS" ] && grep -qE 'format\.sh|bloat-check\.sh|session-start\.sh|
   detached+=("stripped framework hook wirings from settings.json")
 fi
 
-# --- 4. enable the plugin at PROJECT scope ---
-if [ -f "$SETTINGS" ]; then
+# --- 4. enable the plugin at PROJECT scope (skip if already enabled — idempotent) ---
+if [ -f "$SETTINGS" ] && [ "$(jq -r '.enabledPlugins["sf@savvy"] // empty' "$SETTINGS")" != "true" ]; then
   jq '.enabledPlugins = ((.enabledPlugins // {}) + {"sf@savvy": true})' "$SETTINGS" > "$SETTINGS.tmp" && mv "$SETTINGS.tmp" "$SETTINGS"
   detached+=("enabled sf@savvy at project scope")
 fi

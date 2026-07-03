@@ -53,12 +53,7 @@ if [ -f "$cfg" ]; then
   fi
 fi
 
-# --- 2. regenerate the ownership manifest (legacy /sf:upgrade hashes) ---
-if [ -x "$ROOT/scripts/gen-manifest.sh" ]; then
-  "$ROOT/scripts/gen-manifest.sh"
-fi
-
-# --- 3. reverse-generate the legacy in-tree engine under template/.claude/ from root ---
+# --- 2. reverse-generate the legacy in-tree engine under template/.claude/ from root ---
 T="$ROOT/template/.claude"
 mkdir -p "$T/commands/sf" "$T/skills/_framework" "$T/hooks" "$T/agents"
 
@@ -86,6 +81,13 @@ cp "$ROOT"/agents/*.md "$T/agents/"
 
 printf 'build-plugin.sh: reverse-generated template/.claude/{commands,skills,hooks,agents} from root payload.\n' >&2
 
+# --- 2b. regenerate the ownership manifest (legacy /sf:upgrade hashes) ---
+# MUST run after the template regeneration above: the manifest hashes template/
+# content, and hashing first would ship a manifest one iteration stale.
+if [ -x "$ROOT/scripts/gen-manifest.sh" ]; then
+  "$ROOT/scripts/gen-manifest.sh"
+fi
+
 # --- 3b. generate the embedded adoption skeleton under skeleton/ from template/ ---
 # /sf:adopt seeds these create-if-absent into a project. Jinja is substituted to plain
 # defaults; project-specific tokens are left as __PROJECT_NAME__/__PROJECT_DESCRIPTION__
@@ -109,7 +111,9 @@ for f in config.toml lessons.md pending-changes.md; do
 done
 # Reduced floor-guard settings.json: keep permissions + ONLY the PreToolUse secret-scan
 # floor guard (security survives even when the plugin is absent); other 4 hooks plugin-only.
-jq '{permissions: .permissions} + {hooks: {PreToolUse: (.hooks.PreToolUse // [])}}' \
+# deny is unique-sorted so the seeded form is byte-stable under sf-adopt's
+# merge (jq `unique` sorts — an unsorted seed would make re-adopt rewrite it).
+jq '{permissions: (.permissions | .deny = ((.deny // []) | unique))} + {hooks: {PreToolUse: (.hooks.PreToolUse // [])}}' \
   "$ROOT/template/.claude/settings.json" > "$SK/.claude/settings.json"
 # The floor guard needs its script in-tree.
 cp "$ROOT/hooks/secret-scan.sh" "$SK/.claude/hooks/secret-scan.sh"
