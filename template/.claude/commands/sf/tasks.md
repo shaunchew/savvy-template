@@ -22,4 +22,4 @@ Derive a discrete task list for a spec from its `plan.md`, preserving any prior 
 
 ## Output
 
-`specs/<category>/<NNN>-*/sf:tasks.md` rewritten with derived tasks plus carried-over checked items. Console prints task count and path.
+`specs/<category>/<NNN>-*/tasks.md` rewritten with derived tasks plus carried-over checked items. Console prints task count and path.

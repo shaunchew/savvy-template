@@ -27,8 +27,8 @@ assert_exit_code 0 $? "second adopt succeeds"
 
 # Settings stable: no growth, no duplicates.
 assert_valid_json "$S" "settings.json still valid JSON"
-assert_eq "$(jq -S . "$SB/settings.after-first.json" | shasum | cut -d' ' -f1)" \
-          "$(jq -S . "$S" | shasum | cut -d' ' -f1)" \
+assert_eq "$(jq -S . "$SB/settings.after-first.json" | hash_stdin)" \
+          "$(jq -S . "$S" | hash_stdin)" \
           "settings.json semantically unchanged by re-adopt"
 assert_eq "1" "$(jq '[.hooks.PreToolUse[]?.hooks[]?.command // "" | select(test("secret-scan"))] | length' "$S")" "secret-scan floor wired exactly once"
 assert_eq "$(jq '.permissions.deny | length' "$S")" "$(jq '.permissions.deny | unique | length' "$S")" "no duplicate deny entries"

@@ -27,7 +27,7 @@ bad=0
 while IFS=$'\t' read -r p h; do
   if [ ! -f "$COPY/template/$p" ]; then
     bad=$((bad + 1))
-  elif [ "$(shasum -a 256 "$COPY/template/$p" | cut -d' ' -f1)" != "$h" ]; then
+  elif [ "$(hash_file "$COPY/template/$p")" != "$h" ]; then
     bad=$((bad + 1))
   fi
 done < <(jq -r '.files[] | [.path, .sha256] | @tsv' "$M")

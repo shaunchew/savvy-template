@@ -26,4 +26,4 @@ Draft or refresh `plan.md` for an existing spec — technical approach, files to
 
 ## Output
 
-`specs/<category>/<NNN>-*/sf:plan.md` rewritten with the four sections filled. Console prints the path and final line count.
+`specs/<category>/<NNN>-*/plan.md` rewritten with the four sections filled. Console prints the path and final line count.

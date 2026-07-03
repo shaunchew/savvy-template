@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test-linux:
+    name: tests (ubuntu, bash 5)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run test suite
+        run: bash tests/run.sh
+
+  test-macos:
+    name: tests (macos, system bash 3.2)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run test suite under system bash
+        # /bin/bash pinned: GitHub macOS images also carry a newer brew bash;
+        # the framework must stay compatible with the 3.2 every Mac ships.
+        run: /bin/bash tests/run.sh
+
+  shellcheck:
+    name: shellcheck (errors block)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck — error severity (blocking)
+        run: |
+          find scripts hooks tests migrations skeleton -name '*.sh' -type f -print0 \
+            | xargs -0 shellcheck -S error
+      - name: shellcheck — full report (informational)
+        continue-on-error: true
+        run: |
+          find scripts hooks tests migrations skeleton -name '*.sh' -type f -print0 \
+            | xargs -0 shellcheck || true
+
+  payload-integrity:
+    name: plugin payload integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: JSON artifacts are valid
+        run: |
+          for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json \
+                   .claude-plugin/.savvy-manifest.json hooks/hooks.json \
+                   template/.claude/settings.json skeleton/.claude/settings.json; do
+            jq -e . "$f" >/dev/null || { echo "invalid JSON: $f"; exit 1; }
+          done
+      - name: VERSION matches plugin.json and config.toml
+        run: |
+          v="$(tr -d '[:space:]' < VERSION)"
+          pj="$(jq -r .version .claude-plugin/plugin.json)"
+          cfg="$(grep -E '^version' template/.claude/config.toml | head -1 | sed -E 's/.*"([^"]+)".*/\1/')"
+          [ "$v" = "$pj" ] || { echo "VERSION ($v) != plugin.json ($pj)"; exit 1; }
+          [ "$v" = "$cfg" ] || { echo "VERSION ($v) != config.toml ($cfg)"; exit 1; }

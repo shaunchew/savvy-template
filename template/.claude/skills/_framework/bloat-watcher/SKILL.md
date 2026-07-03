@@ -9,7 +9,7 @@ Monitors line counts on length-budgeted context files. Fires from the PostToolUs
 
 ## When to invoke
 
-- PostToolUse hook on `Edit` or `Write` whose path is one of: `AGENTS.md`, `CLAUDE.md`, `constitution.md`, `ROADMAP.md`, `HANDOVER.md`, `specs/**/sf:spec.md`, `specs/**/sf:plan.md`, `.claude/pending-changes.md`.
+- PostToolUse hook on `Edit` or `Write` whose path is one of: `AGENTS.md`, `CLAUDE.md`, `constitution.md`, `ROADMAP.md`, `HANDOVER.md`, `specs/**/spec.md`, `specs/**/plan.md`, `.claude/pending-changes.md`.
 
 ## Procedure
 

@@ -15,7 +15,7 @@ repo_copy "$COPY"
 snap() { # $1=root $2=out
   ( cd "$1" && find template/.claude skeleton .claude-plugin -type f ! -name '.DS_Store' 2>/dev/null \
       | LC_ALL=C sort | while IFS= read -r f; do
-        printf '%s  %s\n' "$(sed '/"generated":/d' "$f" | shasum | cut -d' ' -f1)" "$f"
+        printf '%s  %s\n' "$(sed '/"generated":/d' "$f" | hash_stdin)" "$f"
       done ) > "$2"
 }
 snap "$COPY" "$SB/before.sum"

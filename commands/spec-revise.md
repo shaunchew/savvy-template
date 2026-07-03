@@ -23,4 +23,4 @@ Make targeted edits to an existing spec's `spec.md`, `plan.md`, or `tasks.md` wi
 
 ## Output
 
-Inline previews of the spec's current state, per-file diff prompts, and a final summary listing files edited. Files changed: one or more of `specs/<category>/<NNN>-*/sf:spec.md`, `plan.md`, `tasks.md`, and optionally `ROADMAP.md`.
+Inline previews of the spec's current state, per-file diff prompts, and a final summary listing files edited. Files changed: one or more of `specs/<category>/<NNN>-*/spec.md`, `plan.md`, `tasks.md`, and optionally `ROADMAP.md`.

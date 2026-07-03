@@ -1,4 +1,5 @@
-# helpers.sh — shared test helpers for the savvy-framework test suite.
+# shellcheck shell=bash
+# helpers.sh — shared test helpers for the savvy-framework test suite (sourced, not executed).
 #
 # Constraints honored throughout:
 #   * bash 3.2 compatible (macOS system bash): no associative arrays, no mapfile,
@@ -70,6 +71,16 @@ assert_exit_code() { # $1=expected $2=actual $3=label
 assert_same_content() { # $1=file_a $2=file_b $3=label
   if cmp -s "$1" "$2"; then pass; else fail "${3:-same content}: $1 and $2 differ"; fi
 }
+
+# --- hashing (sha256sum on Linux, shasum on macOS) -----------------------------
+
+if command -v sha256sum >/dev/null 2>&1; then
+  hash_file() { sha256sum "$1" | cut -d' ' -f1; }
+  hash_stdin() { sha256sum | cut -d' ' -f1; }
+else
+  hash_file() { shasum -a 256 "$1" | cut -d' ' -f1; }
+  hash_stdin() { shasum -a 256 | cut -d' ' -f1; }
+fi
 
 # --- sandbox ------------------------------------------------------------------
 

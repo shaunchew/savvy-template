@@ -25,4 +25,4 @@ Archive a spec that is being cancelled or superseded. Move the folder to `specs/
 
 ## Output
 
-A confirmation prompt, a reason prompt, then a summary line. Files changed: `specs/_archive/<NNN>-<name>/sf:spec.md` (status updated), `specs/_archive/<NNN>-<name>/ARCHIVE-REASON.md` (created), and `ROADMAP.md` (refreshed). The original `specs/<category>/<NNN>-<name>/` folder is removed (moved).
+A confirmation prompt, a reason prompt, then a summary line. Files changed: `specs/_archive/<NNN>-<name>/spec.md` (status updated), `specs/_archive/<NNN>-<name>/ARCHIVE-REASON.md` (created), and `ROADMAP.md` (refreshed). The original `specs/<category>/<NNN>-<name>/` folder is removed (moved).

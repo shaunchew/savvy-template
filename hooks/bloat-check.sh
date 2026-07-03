@@ -21,7 +21,7 @@ suggestion=""
 
 # Match in priority order — most specific first.
 case "$file_path" in
-  *.claude/pending-changes.md|*/.claude/pending-changes.md)
+  */.claude/pending-changes.md|.claude/pending-changes.md)
     # Special case: count entries, not lines.
     entries="$(grep -c '^> \*\*20' "$file_path" 2>/dev/null || true)"
     entries="${entries:-0}"
@@ -30,11 +30,11 @@ case "$file_path" in
     fi
     exit 0
     ;;
-  *specs/*/*/sf:spec.md)
+  *specs/*/*/spec.md)
     soft=100; hard=200
     suggestion="shrink to <=200 lines; move detail to plan.md"
     ;;
-  *specs/*/*/sf:plan.md)
+  *specs/*/*/plan.md)
     soft=150; hard=300
     suggestion="split into phase docs under specs/<id>/phases/"
     ;;
