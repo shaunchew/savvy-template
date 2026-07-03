@@ -25,7 +25,7 @@ Smart router for ongoing project changes. Classifies a single-sentence change de
    - **invariant or non-negotiable** -> propose constitution.md addition (deferred).
    - **Claude-behavior tweak** -> propose CLAUDE.md addition (deferred).
    - **integration flip** -> propose `.claude/config.toml` change (deferred).
-   - **unclear** -> walk the placement decision tree in `docs/PLAN.md` §5.11 explicitly and report which branch matched.
+   - **unclear** -> walk the placement decision tree (defined in the `framework-curator` skill) explicitly and report which branch matched.
 3. Print the routing decision in one line: `This change is <category> -> target <file/folder> -> <immediate|deferred>`. Ask `y/n` to proceed.
 4. On `y`, execute APPLY-IMMEDIATELY for: new specs (folder + 4 files), edits to existing spec files, `ROADMAP.md` updates, ADR drafts in `docs/decisions/`, new subagents in `.claude/agents/`. Write directly. Run `bloat-watcher` if it is loaded.
 5. On `y`, execute DEFER for: `AGENTS.md` additions, `CLAUDE.md` additions, `constitution.md` additions, `.claude/config.toml` integration flips. Invoke `framework-curator` with `{target_file, field, content, source: "/sf:evolve '<text>'"}`. The curator appends an entry to `.claude/pending-changes.md`.

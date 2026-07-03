@@ -12,6 +12,22 @@ file_path="$(printf '%s' "$payload" | jq -r '.tool_response.filePath // .tool_in
 [ -z "$file_path" ] && exit 0
 [ ! -f "$file_path" ] && exit 0
 
+# Only act inside ADOPTED framework projects — the plugin's hooks fire in every
+# project once enabled, and enforcing framework line budgets (with a BLOCKING
+# exit 2) on an arbitrary project's AGENTS.md/ROADMAP.md is hostile. Marker:
+# .claude/config.toml with a [framework] section, walking up from the file.
+dir="$(cd "$(dirname "$file_path")" 2>/dev/null && pwd)" || exit 0
+adopted=0
+while [ -n "$dir" ] && [ "$dir" != "/" ]; do
+  if [ -f "$dir/.claude/config.toml" ]; then
+    grep -q '^\[framework\]' "$dir/.claude/config.toml" 2>/dev/null && adopted=1
+    break
+  fi
+  [ "$dir" = "${HOME:-}" ] && break
+  dir="$(dirname "$dir")"
+done
+[ "$adopted" -eq 1 ] || exit 0
+
 # Use basename and full path for matching.
 base="$(basename "$file_path")"
 
@@ -23,7 +39,8 @@ suggestion=""
 case "$file_path" in
   */.claude/pending-changes.md|.claude/pending-changes.md)
     # Special case: count entries, not lines.
-    entries="$(grep -c '^> \*\*20' "$file_path" 2>/dev/null || true)"
+    # Two entry formats exist in the wild (blockquote legacy + heading current) — count both.
+    entries="$(grep -cE '^(> \*\*20|## 20)' "$file_path" 2>/dev/null || true)"
     entries="${entries:-0}"
     if [ "$entries" -ge 50 ]; then
       printf 'bloat-check.sh: pending-changes.md at %s entries. Run /sf:curate.\n' "$entries" >&2

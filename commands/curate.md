@@ -9,12 +9,12 @@ Walk every entry in `.claude/pending-changes.md` and apply, reject, or defer eac
 ## Procedure
 
 1. Read `.claude/pending-changes.md`. If it contains zero entries (only the boilerplate intro or the literal `_(0 entries)_`), print `No pending changes.` and exit.
-2. Parse entries by their `## YYYY-MM-DD HH:MM · <target-file> · <field>` headings. For each entry, present to the user:
+2. Parse entries by their `## YYYY-MM-DD HH:MM · <target-file> · <one-line summary>` headings. For each entry, present to the user:
    - Target file (AGENTS.md / CLAUDE.md / constitution.md / integration config).
    - Proposed content block.
    - Source (which `/sf:evolve` invocation and which spec, if recorded).
 3. Offer three options per entry:
-   - **Apply** — invoke the `framework-curator` skill with `(target_file, proposed_content)`. The skill validates placement against the decision tree (§5.10) and performs the actual edit. On success, mark the entry resolved.
+   - **Apply** — invoke the `framework-curator` skill with `(target_file, proposed_content)`. The skill validates placement against its decision tree and performs the actual edit. On success, mark the entry resolved.
    - **Reject** — ask the user for a one-line rationale. If they provide one, append it to `.claude/lessons.md` tagged `[mistake-avoided]` via the `lesson-recorder` skill. Mark the entry resolved.
    - **Defer** — leave the entry in place, move to the next.
 4. After every entry has been processed, rewrite `.claude/pending-changes.md`:

@@ -1,140 +1,66 @@
-# savvy-template
+# Savvy Framework (`sf`)
 
-The Savvy Coding Framework — a self-owned, agent-agnostic, tool-agnostic framework for managing solo-developer projects across multiple AI coding assistants (Claude Code, Codex, Gemini).
+[![CI](https://github.com/shaunchew/savvy-template/actions/workflows/ci.yml/badge.svg)](https://github.com/shaunchew/savvy-template/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-This repo is a [Copier](https://copier.readthedocs.io/) template. It is consumed via the `savvy` CLI, the `copier copy` command, or the `shaunchew/savvy-template-quickstart` GitHub Template wrapper.
+A self-policing AI-dev framework for solo developers, shipped as a **Claude Code plugin**. Spec-driven workflow, deterministic session hooks, scratchpad mode, and a safety contract most scaffolding tools don't make:
 
-## Quick start
+> **Adopting, upgrading, or removing the framework never deletes or overwrites your files.**
+> Everything is create-if-absent, additively merged, or quarantined — and every claim is enforced by tests in CI.
 
-There are two onboarding paths. Pick one, then open your LLM CLI to start using the framework.
-
-### Path A — Starting a fresh project
-
-Pick whichever is easiest:
-
-```bash
-# One-liner. Auto-installs `uv` and scaffolds into a new subdir.
-curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/main/install.sh | bash -s -- my-project
-
-# If `uv` is already installed.
-uvx copier copy gh:shaunchew/savvy-template my-project
-
-# If the `savvy` zsh CLI is sourced (see "Optional savvy CLI" below).
-savvy new my-project --llm claude --idea "one-line idea here"
-```
-
-Copier walks you through the prompts (`project_name`, `variant`, `llm`, integration toggles). When it finishes it auto-runs `git init && git add . && git commit` for a clean baseline.
-
-### Path B — Adding to an existing project
-
-If you already have a project folder (with or without an existing git repo), scaffold into the current directory using `.`:
-
-```bash
-cd ~/path/to/existing-project
-
-# Recommended first: commit any uncommitted work so the framework scaffold
-# lands as a separate commit and your existing history stays clean.
-git add . && git commit -m "snapshot before savvy scaffold"
-
-# Then one of:
-curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/main/install.sh | bash
-# or
-uvx copier copy gh:shaunchew/savvy-template .
-```
-
-Notes for existing projects:
-
-- Don't use `savvy new` for this — it always creates a new subdirectory.
-- If you already have `README.md`, `AGENTS.md`, `CHANGELOG.md`, etc., Copier will prompt per file. Choose carefully.
-- Two migration variants are supported. **Variant A (passive coexistence)** is the default — new structure lands alongside old files; legacy ages out naturally. **Variant B (active archival)** sweeps non-conforming files into `_legacy/initial-migration-<date>/` for triage; run `/sf:legacy-review --initial-migration` inside Claude Code after the scaffold. See `docs/PLAN.md` §12.
-
-### Do I need an LLM CLI session?
-
-**Not for scaffolding.** The `copier copy` step is pure file generation — no LLM required.
-
-**Yes for everything after.** The framework is exercised inside a Claude Code (or Codex / Gemini) session: slash commands like `/sf:spec`, `/sf:plan`, `/sf:ship`, `/sf:intake`, `/sf:curate` only work there. After scaffolding:
-
-```bash
-cd <project>
-claude   # or codex / gemini if you chose those at scaffold time
-```
-
-For fresh projects, `savvy new` writes `.claude/intake-input.md` and the `SessionStart` hook (`.claude/hooks/session-start.sh`) deterministically surfaces it so Claude runs `/sf:intake --from-file` on session start. For existing projects (Path B), kick off context-building manually:
+## Install (any project — new or existing)
 
 ```
-/sf:intake "<one-line description of what this project does and where it's headed>"
-```
-
-That walks the 5-batch bootstrap (core files → specs → ADRs → subagents → integrations), with per-batch approval.
-
-### Optional — `savvy` CLI on your machine
-
-Wraps the one-liner with intake-prefill and LLM auto-launch:
-
-```bash
-git clone https://github.com/shaunchew/savvy-template ~/code/savvy-template
-echo 'source ~/code/savvy-template/cli/savvy.zsh' >> ~/.zshrc
-source ~/.zshrc
-
-savvy new my-project --llm claude --idea "one-line idea here"
-```
-
-## What you get
-
-- **Markdown-only core.** No DB. No external service required.
-- **Spec-driven development.** constitution → spec → plan → tasks → implement.
-- **Agent-portable.** `AGENTS.md` canonical; `CLAUDE.md` slim overlay.
-- **10 universal framework skills** that police the framework itself in every project.
-- **27 slash commands** under the `/sf:` namespace for the daily workflow (`/sf:spec`, `/sf:plan`, `/sf:ship`, `/sf:handover`, `/sf:resume-handover`, `/sf:curate`, …).
-- **Opt-in integrations** for Notion, Telegram, and RAM. Disabled by default.
-- **Updates propagate** via `copier update`.
-
-## Layout
-
-```
-savvy-framework/
-├── copier.yml          # Copier configuration (questions + tasks + migrations)
-├── docs/
-│   └── PLAN.md         # The living v1.0 spec for the framework itself
-├── cli/
-│   └── savvy.zsh       # v1.0 CLI — zsh function for ~/.zshrc
-└── template/           # Everything Copier copies into a new project
-    ├── AGENTS.md
-    ├── CLAUDE.md
-    ├── constitution.md
-    ├── .claude/
-    ├── specs/
-    ├── docs/
-    └── …
-```
-
-See [`docs/PLAN.md`](docs/PLAN.md) for the full specification.
-
-## Status
-
-v1.0 — Ready to scaffold. See `docs/PLAN.md` §15 for the rollout plan.
-
-## Plugin install (engine distribution)
-
-The engine (skills / commands / hooks / agents) ships as a Claude Code plugin named `sf`. The authored source of truth is the repo-root payload (`commands/`, `skills/`, `hooks/`, `agents/`, `.claude-plugin/`); installs land out-of-tree in `~/.claude/plugins`, so updating the engine can never touch your project files. Distribution is marketplace-mediated — there is no `gh:` install path.
-
-```bash
-# In any repo (real flow, two steps):
 /plugin marketplace add shaunchew/savvy-template
 /plugin install sf@savvy
 ```
 
-Updates are version-gated: `/plugin update sf@savvy` is a no-op until `plugin.json`'s version changes, so a pinned project is immune to newer engine releases until it deliberately updates.
+Then, inside the project you want to adopt:
 
-`scripts/build-plugin.sh` is a release-time step (not an install step): it stamps the version from `VERSION`, regenerates the ownership manifest, and reverse-generates the legacy in-tree engine under `template/.claude/` from the root payload (kept until the Phase 3 cutover for projects scaffolded before the plugin era).
-
-## Patching an existing scaffold
-
-For projects scaffolded from an older version, each release that needs a retroactive fix ships an idempotent script in [`migrations/`](migrations/). Apply one-liner:
-
-```bash
-cd <your-project>
-curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/main/migrations/<version>.sh | bash
+```
+/sf:adopt --dry-run     # see the exact plan — changes nothing
+/sf:adopt               # do it (refuses a dirty git tree)
 ```
 
-See [`migrations/README.md`](migrations/README.md) for the catalogue and the contract these scripts follow.
+`/sf:adopt` seeds context files (`AGENTS.md`, `constitution.md`, `ROADMAP.md`, …) **only where they don't exist**, additively merges safety rules into `.claude/settings.json` (yours are preserved, the original is backed up), and enables the plugin for this project only. If the project used an older in-tree version of the framework, its engine files are **moved to a quarantine dir, never deleted** — local edits survive.
+
+Not sure about the state of an installation? `/sf:doctor` (read-only). Want out? `/sf:eject` reverses adoption with the same guarantees and keeps every file you edited.
+
+## What you get
+
+| Area | Commands |
+|---|---|
+| Spec-driven flow | `/sf:spec` → `/sf:plan` → `/sf:tasks` → `/sf:ship` |
+| Project context | `/sf:intake`, `/sf:curate`, `/sf:handover`, `/sf:resume-handover`, `/sf:lesson` |
+| Safety & lifecycle | `/sf:adopt`, `/sf:doctor`, `/sf:eject`, `/sf:upgrade` (legacy), `/sf:lint-framework` |
+| Exploration | `/sf:scratchpad` (isolated experiments), `/sf:legacy-review` (brownfield triage) |
+
+Plus deterministic hooks (session context loading, secret-scan blocking on every Bash call, doc line-budgets) and three canonical subagents (explorer, code-reviewer, parallel-runner). Hooks **only act in adopted projects** — installing the plugin does nothing to your other repos.
+
+## The safety contract, concretely
+
+| Operation | Guarantee | Enforced by |
+|---|---|---|
+| `/sf:adopt` | create-if-absent; additive merge; dirty-tree guard; `--dry-run`; symlink + invalid-JSON pre-flight | `tests/test-adopt-*.sh` |
+| detach (legacy engine) | quarantined to `.claude/.savvy-detached-<ts>/`, never deleted; user hooks/files preserved | `tests/test-adopt-detach.sh` |
+| `/sf:eject` | edited files kept; unedited seeds quarantined; plugin disabled | `tests/test-doctor-eject-dryrun.sh` |
+| engine updates | out-of-tree plugin cache; version-gated `/plugin update` — cannot touch project files | plugin architecture |
+| hooks | no-op outside adopted projects; secret-scan blocks credentials in Bash commands | `tests/test-hooks-*.sh` |
+
+Run the suite yourself: `bash tests/run.sh` (needs only bash 3.2+, git, jq).
+
+## For existing projects with heavy history
+
+`/sf:intake` builds context from your codebase in approval-gated batches; `/sf:legacy-review` triages non-conforming files into `_legacy/` with per-item confirmation and a written restore path. Nothing moves without `git mv` on a clean tree.
+
+## Development
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). TL;DR: repo root is the plugin payload (the only authored source); `template/` and `skeleton/` are generated by `scripts/build-plugin.sh`; every change to `scripts/`, `hooks/`, or `migrations/` needs a test; CI runs everything on Linux and macOS system bash.
+
+## Legacy paths
+
+Projects scaffolded by the pre-plugin Copier template keep working: `/sf:upgrade` (manifest-driven, conflict-safe) upgrades them in place, and `/sf:adopt` moves them onto the plugin engine whenever ready. The Copier/curl scaffolding path is deprecated and will be removed in v2.0.
+
+## License
+
+MIT

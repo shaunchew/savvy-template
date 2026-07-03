@@ -53,6 +53,19 @@ assert_ne "0" "$rc" "adopt refuses invalid settings.json"
 assert_file_absent "$BADJSON/AGENTS.md" "nothing seeded when settings.json is invalid"
 assert_file_absent "$BADJSON/.claude/settings.json.savvy-old" "no backup written when refused"
 
+# --- symlinked settings.json: refuse (adopt would sever the link) ----------------
+SYM="$SB/symlink-app"
+make_git_project "$SYM" "symlink-app"
+mkdir -p "$SYM/.claude" "$SB/dotfiles"
+echo '{"permissions":{"deny":[]}}' > "$SB/dotfiles/claude-settings.json"
+ln -s "$SB/dotfiles/claude-settings.json" "$SYM/.claude/settings.json"
+( cd "$SYM" && git add -A && git commit -qm symlink )
+"$COPY/scripts/sf-adopt.sh" --project "$SYM" >/dev/null 2>&1
+rc=$?
+assert_ne "0" "$rc" "adopt refuses symlinked settings.json"
+if [ -L "$SYM/.claude/settings.json" ]; then pass; else fail "symlink must be left intact after refusal"; fi
+assert_file_absent "$SYM/AGENTS.md" "nothing seeded when refused for symlink"
+
 # --- project name with sed metacharacters must not corrupt seeded files ----------
 NASTY="$SB/app&api"
 make_git_project "$NASTY" "nasty"

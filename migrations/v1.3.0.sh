@@ -12,11 +12,17 @@
 # a matching .claude/commands/sf/<name>.md sibling. Custom commands you authored
 # at the top level (with no sf/ twin) are left untouched.
 #
+# FROZEN ARTIFACT: this migration belongs to the v1.3.0 release, so its self-fetch
+# URLs are pinned to the immutable `v1.3.0` tag, never `main` (which may drop
+# framework paths in a later phase of the rearchitecture). This script makes no
+# remote fetch of its own — it only rewrites local files — so the tag pin is purely
+# for the copy-paste one-liners below.
+#
 # Usage (from your project root):
-#   curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/main/migrations/v1.3.0.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/v1.3.0/migrations/v1.3.0.sh | bash
 #
 # Or download and run locally:
-#   curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/main/migrations/v1.3.0.sh -o /tmp/v1.3.0.sh
+#   curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/v1.3.0/migrations/v1.3.0.sh -o /tmp/v1.3.0.sh
 #   less /tmp/v1.3.0.sh   # inspect
 #   bash /tmp/v1.3.0.sh
 #

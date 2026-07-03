@@ -45,8 +45,10 @@ if printf '%s' "$cmd" | grep -E 'sk_(live|test)_[A-Za-z0-9]{20,}' >/dev/null 2>&
 fi
 
 # OpenAI / Anthropic style sk- keys (must NOT match sk_live_/sk_test_ already handled).
-# Require sk- (with dash) to avoid colliding with Stripe's sk_.
-if printf '%s' "$cmd" | grep -E 'sk-[A-Za-z0-9_-]{20,}' >/dev/null 2>&1; then
+# Require sk- (with dash) to avoid colliding with Stripe's sk_. The boundary
+# (start-of-string or a non-word, non-hyphen char) prevents matching INSIDE
+# ordinary kebab-case words like "desk-organizer-listing-tool" or "risk-assessment-...".
+if printf '%s' "$cmd" | grep -E '(^|[^A-Za-z0-9-])sk-[A-Za-z0-9_-]{20,}' >/dev/null 2>&1; then
   block "OpenAI/Anthropic-style API key"
 fi
 

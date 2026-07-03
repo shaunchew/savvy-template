@@ -42,6 +42,26 @@ jobs:
           find scripts hooks tests migrations skeleton -name '*.sh' -type f -print0 \
             | xargs -0 shellcheck || true
 
+  version-bump-reminder:
+    name: engine changed but VERSION unchanged? (soft)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - run: |
+          v="$(tr -d '[:space:]' < VERSION)"
+          if git rev-parse -q --verify "refs/tags/v$v" >/dev/null 2>&1; then
+            if ! git diff --quiet "v$v" HEAD -- commands skills hooks agents scripts skeleton .claude-plugin migrations; then
+              echo "::warning::engine differs from tag v$v but VERSION still reads $v — bump VERSION before releasing"
+              exit 1
+            fi
+          else
+            echo "tag v$v not found — skipping"
+          fi
+
   payload-integrity:
     name: plugin payload integrity
     runs-on: ubuntu-latest

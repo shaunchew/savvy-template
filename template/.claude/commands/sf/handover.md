@@ -10,7 +10,7 @@ Regenerate `HANDOVER.md` from scratch as a session bridge. Never append — alwa
 
 1. Gather current state by running, in parallel: `git status` (no `-uall`), `git log -5 --oneline`, `git branch --show-current`, and a recent `git diff --stat` for files modified in the working tree.
 2. Identify the active spec(s): scan `specs/<category>/*/` for any with status frontmatter `in-progress` or matching the current branch name (`<category>/<NNN>-*`).
-3. Count entries in `.claude/pending-changes.md` (each `## YYYY-MM-DD ...` heading is one entry; treat the boilerplate intro lines as zero).
+3. Count entries in `.claude/pending-changes.md` (each `## <date> HH:MM · <target-file> · <summary>` heading with a real calendar date is one entry; ignore the boilerplate intro and the literal `YYYY-MM-DD` format example).
 4. Compose a fresh `HANDOVER.md` with these sections, in order, filling only what is known (omit a section if truly empty rather than padding):
    - `# Handover`
    - `Last updated: <ISO timestamp>`

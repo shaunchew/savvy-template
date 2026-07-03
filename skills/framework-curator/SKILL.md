@@ -5,7 +5,7 @@ description: Validates proposed edits to AGENTS.md, CLAUDE.md, or constitution.m
 
 # Framework Curator
 
-Gatekeeper for the three core context files (`AGENTS.md`, `CLAUDE.md`, `constitution.md`). Validates proposed additions against the placement decision tree from `docs/PLAN.md` §5.11 and defers approved changes to `.claude/pending-changes.md` until `/sf:curate` applies them.
+Gatekeeper for the three core context files (`AGENTS.md`, `CLAUDE.md`, `constitution.md`). Validates proposed additions against the placement decision tree (defined in the Procedure below) and defers approved changes to `.claude/pending-changes.md` until `/sf:curate` applies them.
 
 ## When to invoke
 
@@ -31,13 +31,13 @@ Gatekeeper for the three core context files (`AGENTS.md`, `CLAUDE.md`, `constitu
    12. Speculative or exploratory -> route to `scratchpads/<name>/`.
    13. Reusable across projects -> route to `~/.claude/skills/`.
    14. Anything else -> tell the user it probably doesn't need to exist.
-3. If branches 4-6 matched (root AGENTS.md / CLAUDE.md / constitution.md), BLOCK direct edits unless the invocation came from `/sf:curate`. Instead append to `.claude/pending-changes.md`:
+3. If branches 4-6 matched (root AGENTS.md / CLAUDE.md / constitution.md), BLOCK direct edits unless the invocation came from `/sf:curate`. Instead append one entry to `.claude/pending-changes.md` in this exact heading format:
    ```
-   ## YYYY-MM-DD HH:MM · <target-file> · <field>
+   ## YYYY-MM-DD HH:MM · <target-file> · <one-line summary>
    <content>
    Source: <source>
    ```
-   Use the local clock for the timestamp.
+   Use the local clock for the timestamp. `<one-line summary>` is a few words naming the addition (e.g. the field or section it targets).
 4. Report to the user: which branch matched, what action was taken, and (when deferred) remind them to run `/sf:curate` after the current work ships.
 
 ## Output
@@ -50,5 +50,5 @@ Gatekeeper for the three core context files (`AGENTS.md`, `CLAUDE.md`, `constitu
 
 - Direct edit attempted on `AGENTS.md`/`CLAUDE.md`/`constitution.md` outside `/sf:curate`: refuse the edit, append to pending-changes instead, and tell the user.
 - Ambiguous content matching multiple branches: pick the highest-priority (lowest-numbered) branch and note the tie in the report.
-- `.claude/pending-changes.md` missing: create it with the header from PLAN §4.8, then append.
+- `.claude/pending-changes.md` missing: create it with a `# Pending changes — awaiting /sf:curate` header plus a one-line intro, then append the entry.
 - Target file missing entirely: do not auto-create core files; report the gap and suggest `/sf:lint-framework`.

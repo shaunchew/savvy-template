@@ -42,7 +42,7 @@ Guided walkthroughs of the most common framework flows. Use this when onboarding
 ### existing-project
 
 1. **What:** Confirm scaffold landed cleanly. **Run:** `ls -la .claude/ specs/ docs/`. **Watch for:** all directories present; no merge conflict markers in any framework file.
-2. **What:** Decide on migration variant. **Run:** read `docs/PLAN.md` §12 if unsure. Variant A = passive coexistence (just leave old files); Variant B = active archival into `_legacy/`.
+2. **What:** Decide on migration variant. **Run:** choose one — Variant A = passive coexistence (just leave old files in place); Variant B = active archival into `_legacy/` via `/sf:legacy-review --initial-migration` (which requires a clean git tree).
 3. **What:** If Variant B, sweep non-conforming files. **Run:** `/sf:legacy-review --initial-migration`. **Watch for:** per-item Keep/Delete/Restore prompts; a `_legacy/initial-migration-<date>/` folder appears.
 4. **What:** Bootstrap context from the existing codebase. **Run:** `/sf:intake "<what this project already does + where it's headed>"`. **Watch for:** the intake skill will read the existing code and propose AGENTS.md / specs / ADRs that match reality.
 5. **What:** Sanity check. **Run:** `/sf:lint-framework` then `/sf:handover`.

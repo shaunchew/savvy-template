@@ -23,6 +23,23 @@ case "$file_path" in
   .git/*|node_modules/*|.venv/*|dist/*|build/*) exit 0 ;;
 esac
 
+# Only act inside ADOPTED framework projects — the plugin's hooks fire in every
+# project once the plugin is enabled, and reformatting a non-adopted project's
+# files to prettier/black defaults is exactly the "mess up existing projects"
+# failure this framework promises never to cause. Marker: .claude/config.toml
+# with a [framework] section, found walking up from the edited file.
+dir="$(cd "$(dirname "$file_path")" 2>/dev/null && pwd)" || exit 0
+adopted=0
+while [ -n "$dir" ] && [ "$dir" != "/" ]; do
+  if [ -f "$dir/.claude/config.toml" ]; then
+    grep -q '^\[framework\]' "$dir/.claude/config.toml" 2>/dev/null && adopted=1
+    break
+  fi
+  [ "$dir" = "${HOME:-}" ] && break
+  dir="$(dirname "$dir")"
+done
+[ "$adopted" -eq 1 ] || exit 0
+
 # Determine extension (lowercase).
 ext="${file_path##*.}"
 ext="$(printf '%s' "$ext" | tr '[:upper:]' '[:lower:]')"

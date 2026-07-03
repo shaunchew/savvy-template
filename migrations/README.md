@@ -25,14 +25,19 @@ Every script in this directory MUST be:
 
 ## Usage from a project root
 
+Migration scripts are **frozen artifacts**: each is pinned to the immutable release
+tag it belongs to, never `main`. A later phase of the distribution rearchitecture
+removes `template/` from `main`, so a `main`-pinned `curl` would break permanently.
+Fetch each migration from its own tag (`v<version>`):
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/main/migrations/<version>.sh | bash
+curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/v<version>/migrations/v<version>.sh | bash
 ```
 
 Or download first if you want to read before running:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/main/migrations/<version>.sh -o /tmp/migrate.sh
+curl -fsSL https://raw.githubusercontent.com/shaunchew/savvy-template/v<version>/migrations/v<version>.sh -o /tmp/migrate.sh
 less /tmp/migrate.sh   # inspect
 bash /tmp/migrate.sh
 ```
@@ -47,7 +52,20 @@ bash /tmp/migrate.sh
 
 ## Baselines (`migrations/baselines/`)
 
-`baselines/v<version>.json` are retroactive `.savvy-manifest` snapshots of shipped releases that predate the manifest system. The `v1.4.0.sh` bootstrap installs the one matching a project's current version so the first `/sf:upgrade` can distinguish "framework file you never edited → safe to refresh" from "framework file you edited → conflict." Regenerate with `scripts/gen-baseline-from-tag.sh v<version>` (reads the git tag, no checkout). Going forward every release ships its manifest in-tree, so no new baselines are needed.
+`baselines/v<tag>.json` are retroactive `.savvy-manifest` snapshots of shipped releases that predate the manifest system, named by **git tag** and hashed straight from the tagged `template/` tree (`scripts/gen-baseline-from-tag.sh v<tag>` — reads the tag, no checkout; policy classification stays in sync with `gen-manifest.sh`). The full set is committed: `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0`, `v1.3.0`, `v1.4.0`. Going forward every release ships its manifest in-tree, so no new baselines are needed.
+
+The `v1.4.0.sh` bootstrap installs the baseline matching a project's current version so the first `/sf:upgrade` can distinguish "framework file you never edited → safe to refresh" from "framework file you edited → conflict."
+
+**Stamp → baseline tag mapping.** Pre-v1.4.0 `config.toml` version stamps are *coarse* and do not match baseline filenames one-to-one — several tags share a stamp. `v1.4.0.sh` maps the recorded stamp to a git tag, picking the **oldest** tag for a shared stamp (its baseline treats more files as possibly-edited → conflict, which is the conservative, safe lean):
+
+| `config.toml` stamp | tags carrying it | baseline installed |
+|---|---|---|
+| `1.0` | v1.0.0, v1.0.1, v1.1.0 | `v1.0.0.json` (oldest) |
+| `1.1` | v1.2.0 | `v1.2.0.json` |
+| `1.3` | v1.3.0 | `v1.3.0.json` |
+| `1.4.0` | v1.4.0 | `v1.4.0.json` |
+
+An unrecognized stamp installs no baseline and `/sf:upgrade` runs in conservative mode. Because `v1.4.0.sh` fetches baselines from the pinned `v1.4.0` tag, that tag's `migrations/baselines/` tree must carry every baseline the mapping can name; a missing one degrades gracefully to conservative mode (safe, never overwrites).
 
 ## Authoring a new migration
 

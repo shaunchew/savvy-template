@@ -1,7 +1,7 @@
 {
   "framework": "savvy-framework",
   "version": "1.3.0",
-  "generated": "2026-05-21",
+  "generated": "2026-07-03",
   "source": "retroactive baseline from git tag v1.3.0",
   "files": [
     { "path": ".claude/agents/.gitkeep", "policy": "seeded", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },

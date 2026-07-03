@@ -5,7 +5,7 @@ description: PostToolUse hook that counts lines on context files after Edit/Writ
 
 # Bloat Watcher
 
-Monitors line counts on length-budgeted context files. Fires from the PostToolUse hook on `Edit` or `Write` against any tracked file. Budgets defined in `docs/PLAN.md` Appendix A.
+Monitors line counts on length-budgeted context files. Fires from the PostToolUse hook on `Edit` or `Write` against any tracked file. Budgets are defined in the table below.
 
 ## When to invoke
 
@@ -26,7 +26,7 @@ Monitors line counts on length-budgeted context files. Fires from the PostToolUs
    | `HANDOVER.md` | 30 | 50 |
    | `.claude/pending-changes.md` | n/a | warn at 50 entries |
 
-2. Count non-trailing-blank lines (`wc -l` minus trailing empty lines). For `pending-changes.md`, count entries (lines starting with `## ` and a date).
+2. Count non-trailing-blank lines (`wc -l` minus trailing empty lines). For `pending-changes.md`, count entries: each `## ` heading whose next token is a real calendar date (current format), plus any legacy `> **<date>**` blockquote line (backward compat). Do not count the boilerplate intro or the `YYYY-MM-DD` format example.
 3. Compare:
    - Below soft target -> exit silently.
    - Between soft and hard -> emit a warning to Claude with the file path, current count, both thresholds, and concrete extraction candidates (see step 4).

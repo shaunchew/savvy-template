@@ -20,6 +20,10 @@ mklines() { # $1=path $2=count
   while [ "$i" -lt "$2" ]; do echo "line $i" >> "$1"; i=$((i + 1)); done
 }
 
+# The hook only acts inside ADOPTED projects — mark the fixture as one.
+mkdir -p "$SB/proj/.claude"
+printf '[framework]\nversion = "1.4.0"\n' > "$SB/proj/.claude/config.toml"
+
 # Over-hard-budget spec.md blocks (exit 2) with a suggestion.
 mklines "$SB/proj/specs/product/001-thing/spec.md" 250
 assert_eq 2 "$(run_hook "$SB/proj/specs/product/001-thing/spec.md")" "spec.md over hard budget exits 2"
@@ -51,5 +55,18 @@ grep -q "curate" "$SB/err" && pass || fail "pending-changes over 50 entries shou
 # Resilience: garbage stdin.
 printf 'not json' | bash "$HOOK" >/dev/null 2>&1
 assert_exit_code 0 $? "garbage stdin exits 0"
+
+# --- adoption gate: NON-adopted projects are never bloat-policed ------------------
+mklines "$SB/other/AGENTS.md" 500
+assert_eq 0 "$(run_hook "$SB/other/AGENTS.md")" "non-adopted project: no budget enforcement, exit 0"
+
+# pending-changes: both entry formats are counted (blockquote legacy + heading current).
+: > "$SB/proj/.claude/pending-changes.md"
+i=0
+while [ "$i" -lt 30 ]; do printf '> **2026-01-01 10:00** — old-style %s\n' "$i" >> "$SB/proj/.claude/pending-changes.md"; i=$((i + 1)); done
+i=0
+while [ "$i" -lt 30 ]; do printf '## 2026-01-02 11:00 · file.md · new-style %s\n' "$i" >> "$SB/proj/.claude/pending-changes.md"; i=$((i + 1)); done
+run_hook "$SB/proj/.claude/pending-changes.md" >/dev/null
+grep -q "60 entries" "$SB/err" && pass || fail "should count 60 entries across both formats, got: $(cat "$SB/err")"
 
 finish

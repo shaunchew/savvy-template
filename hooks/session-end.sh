@@ -8,9 +8,10 @@ IFS=$'\n\t'
 cat >/dev/null 2>&1 || true
 
 # Locate project root: walk up from CWD looking for .claude/. Fallback to CWD.
+# Stops BEFORE $HOME: ~/.claude is the user's global Claude config, not a project.
 find_root() {
   local dir="$PWD"
-  while [ "$dir" != "/" ]; do
+  while [ "$dir" != "/" ] && [ "$dir" != "${HOME:-/nonexistent}" ]; do
     if [ -d "$dir/.claude" ]; then
       printf '%s' "$dir"
       return 0
@@ -21,6 +22,13 @@ find_root() {
 }
 
 root="$(find_root)"
+
+# Only nag inside ADOPTED framework projects — the plugin's Stop hook fires in
+# every project once enabled; "no HANDOVER.md found, consider /sf:handover" in a
+# project that never adopted the framework is noise at best.
+if ! { [ -f "$root/.claude/config.toml" ] && grep -q '^\[framework\]' "$root/.claude/config.toml" 2>/dev/null; }; then
+  exit 0
+fi
 
 # 1. HANDOVER.md staleness check.
 handover="$root/HANDOVER.md"
@@ -43,7 +51,7 @@ fi
 # 2. pending-changes.md entry count.
 pending="$root/.claude/pending-changes.md"
 if [ -f "$pending" ]; then
-  entries="$(grep -c '^> \*\*20' "$pending" 2>/dev/null || true)"
+  entries="$(grep -cE '^(> \*\*20|## 20)' "$pending" 2>/dev/null || true)"
   entries="${entries:-0}"
   if [ "$entries" -gt 0 ]; then
     printf 'session-end.sh: %s pending change(s) awaiting /sf:curate.\n' "$entries" >&2

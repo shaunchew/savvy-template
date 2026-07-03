@@ -19,7 +19,7 @@ Isolated exploration workspace under `scratchpads/<NNN>-<name>/`. While active, 
 
 1. Look up the highest existing `NNN` prefix under `scratchpads/` and increment. If `<name>` already exists, enter it instead of creating.
 2. Create `scratchpads/<NNN>-<name>/` with these files:
-   - `SCRATCHPAD.md` -- header with Status (`active`), Created date, Context, Topic, Open questions, "What this could become" (use the template in PLAN §5.10).
+   - `SCRATCHPAD.md` -- header with Status (`active`), Created date, Context, Topic, Open questions, and "What this could become" (those fields are the template).
    - `notes.md` -- empty.
    - `findings.md` -- empty.
    - `generated/` -- empty directory (keep with `.gitkeep` if needed).

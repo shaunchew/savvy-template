@@ -16,7 +16,7 @@ Record a one-line lesson into `.claude/lessons.md` via the lesson-recorder skill
 
 ## Arguments
 
-- `$ARGUMENTS` — the lesson text. May begin with a bracket tag like `[gotcha]` to set the category. Example: `[gotcha] copier update silently drops .env files`.
+- `$ARGUMENTS` — the lesson text. May begin with a bracket tag like `[gotcha]` to set the category. Example: `[gotcha] the CI cache key must include the lockfile hash or installs go stale`.
 
 ## Invokes
 

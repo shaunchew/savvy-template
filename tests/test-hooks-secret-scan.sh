@@ -29,6 +29,8 @@ assert_eq 0 "$(run_hook 'grep -r password_reset src/')" "allows innocent mention
 assert_eq 0 "$(run_hook 'git commit -m "rotate api key handling"')" "allows commit message about keys"
 assert_eq 0 "$(run_hook 'curl --token=$MY_TOKEN https://api.example.com')" "allows unquoted var-based token flag"
 assert_eq 0 "$(run_hook 'ls -la ~/.ssh/')" "allows listing key dir"
+assert_eq 0 "$(run_hook 'mv desk-organizer-listing-tool-v2 archive/')" "allows kebab-case word containing sk-"
+assert_eq 0 "$(run_hook 'cat docs/risk-assessment-2026-final-draft.md')" "allows risk-assessment style filenames"
 
 # --- resilience -----------------------------------------------------------------
 printf '' | bash "$HOOK" >/dev/null 2>&1

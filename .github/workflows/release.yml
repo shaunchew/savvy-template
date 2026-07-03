@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tag matches VERSION and plugin.json
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          v="$(tr -d '[:space:]' < VERSION)"
+          pj="$(jq -r .version .claude-plugin/plugin.json)"
+          [ "$tag" = "$v" ]  || { echo "tag v$tag != VERSION $v"; exit 1; }
+          [ "$tag" = "$pj" ] || { echo "tag v$tag != plugin.json $pj"; exit 1; }
+
+      - name: Full test suite must pass
+        run: bash tests/run.sh
+
+      - name: Generated artifacts must not drift
+        run: |
+          bash scripts/build-plugin.sh
+          # the manifest 'generated' date legitimately changes; everything else may not
+          git checkout -- template/.claude/.savvy-manifest.json .claude-plugin/.savvy-manifest.json 2>/dev/null || true
+          if ! git diff --quiet; then
+            echo "build-plugin.sh output differs from committed artifacts:"; git diff --stat; exit 1
+          fi
+
+      - name: CHANGELOG has a section for this version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          grep -q "\[$tag\]" CHANGELOG.md || { echo "CHANGELOG.md missing [$tag] section"; exit 1; }
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          # release notes = the CHANGELOG section for this version
+          awk -v ver="[${GITHUB_REF_NAME#v}]" '
+            index($0, ver) && /^## / {on=1; next}
+            /^## / && on {exit}
+            on {print}
+          ' CHANGELOG.md > notes.md
+          gh release create "$tag" --title "$tag" --notes-file notes.md

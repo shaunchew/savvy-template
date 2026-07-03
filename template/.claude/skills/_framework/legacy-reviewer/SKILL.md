@@ -30,12 +30,43 @@ Walks items in `_legacy/<migration-name>/` one at a time. Per-item options: Keep
 
 ### Initial-migration walk (`--initial-migration`)
 
-1. Scan the repo for files outside the canonical structure defined in `docs/PLAN.md` §3 (anything not in `specs/`, `docs/`, `.claude/`, `src/`, etc.).
-2. Group findings by likely origin (old `plans/`, `tasks/`, ad-hoc notes, abandoned drafts).
-3. Present each group to the user with proposed archive action. Do NOT move anything yet.
-4. Once the user approves, bulk-move approved items to `_legacy/initial-migration-YYYY-MM-DD/` preserving relative paths.
-5. Generate `_legacy/initial-migration-YYYY-MM-DD/MIGRATION_NOTES.md` summarizing what got archived and why, using the format in PLAN §5.9.
-6. Create an empty `REVIEW-LOG.md` in the same folder. Tell the user to run `/sf:legacy-review <that-folder>` later for item-by-item decisions.
+This is a bulk file-move over someone's existing repository. Treat it as destructive and gate it hard.
+
+1. **Pre-flight: require a clean tree.** Run `git status --porcelain`. If it prints anything (any staged or unstaged change), or the directory is not a git repo, ABORT and tell the user to commit or stash first. A clean tree is what makes the whole sweep one revertible diff — never sweep with a dirty tree.
+
+2. **Scan for candidates, honoring the never-sweep whitelist.** List files and directories at the repo root (and obvious ad-hoc note locations) that are not part of the framework, the project's own source, or standard tooling. NEVER move anything matching this whitelist:
+   - Framework dirs: `specs/`, `docs/`, `scratchpads/`, `.claude/`, `_legacy/`.
+   - The project's own source dirs (whatever roots the repo clearly builds from — e.g. `src/`, `lib/`, `app/`, `pkg/`, `internal/`, `cmd/`).
+   - Build / tooling manifests: `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `Gemfile`, `pom.xml`, `build.gradle`, `Makefile`, `CMakeLists.txt`.
+   - Lockfiles: `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `poetry.lock`, `Cargo.lock`, `go.sum`, `Gemfile.lock`, and the like.
+   - CI / config: `.github/`, `.gitlab-ci.yml`, and any other CI configuration.
+   - `LICENSE*`, `README.md`, `.git*` (`.gitignore`, `.gitattributes`, …), `.env*`, `node_modules/`, `vendor/`, `dist/`, `build/`.
+
+   Everything else is only a *candidate* — typically stray planning docs (a root-level `PLAN.md`, `TASKS.md`), scratch notes, or abandoned drafts.
+
+3. **Group candidates** by likely origin (old `plans/`, `tasks/`, ad-hoc notes, abandoned drafts) and present each to the user. Do NOT move anything yet.
+
+4. **Confirm per item.** Require an explicit `y`/`n`/`skip` for anything that is not clearly ad-hoc scratch notes. Only unambiguous scratch notes may be batched, and even then show the full list and get one confirmation before moving.
+
+5. **Move approved items** into `_legacy/initial-migration-YYYY-MM-DD/`, preserving relative paths. Use `git mv` for tracked files (preserves history); use plain `mv` only for untracked files. Never `rm -rf`, and never move a whole directory blindly — move its files.
+
+6. **Write `_legacy/initial-migration-YYYY-MM-DD/MIGRATION_NOTES.md`** from this template, one table row per moved file:
+
+   ```
+   # Migration notes — initial adoption — YYYY-MM-DD
+
+   Swept non-conforming files into this folder during `/sf:legacy-review --initial-migration`.
+   Nothing here was deleted; each row records where a file came from and how to restore it.
+
+   | Moved file (under this folder) | Original path | Restore command |
+   |---|---|---|
+   | PLAN.md | ./PLAN.md | git mv _legacy/initial-migration-YYYY-MM-DD/PLAN.md ./PLAN.md |
+
+   To restore everything, run each row's restore command (use plain `mv` instead of `git mv`
+   for files that were untracked when they were moved).
+   ```
+
+7. **Create an empty `REVIEW-LOG.md`** in the same folder. Tell the user to run `/sf:legacy-review <that-folder>` later for item-by-item Keep/Delete/Restore decisions.
 
 ## Output
 

@@ -3,7 +3,7 @@
   "name": "sf",
   "displayName": "Savvy Framework",
   "version": "1.4.0",
-  "description": "Self-policing AI-dev framework for solo developers. 11 framework skills, 28 /sf: slash commands, 5 hooks, 3 canonical subagents. Spec-driven workflow, scratchpad-mode, legacy-archival, manifest-driven safe upgrades.",
+  "description": "Self-policing AI-dev framework for solo developers. Spec-driven workflow, safe brownfield adoption (/sf:adopt with dry-run, /sf:doctor, /sf:eject), scratchpad-mode, legacy archival, quarantine-based detach — never deletes your files.",
   "author": {
     "name": "Shaun Chew",
     "email": "scwj1210@gmail.com"
