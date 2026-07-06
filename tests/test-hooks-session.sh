@@ -39,6 +39,10 @@ cat > "$FW/.claude/config.toml" <<'EOF'
 version = "1.4.0"
 variant = "solo"
 EOF
+# plugin adopted at project scope — required for the engine stamp
+cat > "$FW/.claude/settings.json" <<'EOF'
+{ "enabledPlugins": { "sf@savvy": true } }
+EOF
 # The banner must arrive on STDOUT — SessionStart stdout is injected into
 # Claude's context; stderr with exit 0 is invisible (confirmed audit finding).
 out="$(cd "$FW" && printf '{}' | bash "$START" 2>/dev/null)"
@@ -48,9 +52,29 @@ case "$out" in
   *) fail "version banner missing from session-start STDOUT: $out" ;;
 esac
 
-# Plugin mode: engine version stamped into an ADOPTED project only.
+# Plugin mode: engine version stamped into a PLUGIN-ADOPTED project only.
 ( cd "$FW" && printf '{}' | CLAUDE_PLUGIN_ROOT="$REPO_ROOT" bash "$START" >/dev/null 2>&1 )
-assert_file_exists "$FW/.claude/.savvy-engine-version" "engine version stamped in adopted project"
+assert_file_exists "$FW/.claude/.savvy-engine-version" "engine version stamped in plugin-adopted project"
+
+# Legacy in-tree project (config.toml but NO sf@savvy in settings): must NOT be
+# stamped — a stray stamp would make /sf:upgrade's plugin-mode guard refuse it.
+LG="$SB/legacy-intree"
+mkdir -p "$LG/.claude/commands/sf"
+printf '[framework]\nversion = "1.3.0"\n' > "$LG/.claude/config.toml"
+echo '{}' > "$LG/.claude/settings.json"
+( cd "$LG" && printf '{}' | CLAUDE_PLUGIN_ROOT="$REPO_ROOT" bash "$START" >/dev/null 2>&1 )
+assert_file_absent "$LG/.claude/.savvy-engine-version" "legacy in-tree project is never stamped"
+
+# Coexistence warning: a NON-adopted project with its OWN session-start hook must
+# get NO stdout advice to run /sf:adopt (which would detach the user's hook).
+UH="$SB/user-hook-project"
+mkdir -p "$UH/.claude/hooks"
+printf '#!/bin/sh\necho my own hook\n' > "$UH/.claude/hooks/session-start.sh"
+cat > "$UH/.claude/settings.json" <<'EOF'
+{ "hooks": { "SessionStart": [ { "hooks": [ { "type": "command", "command": ".claude/hooks/session-start.sh" } ] } ] } }
+EOF
+co_out="$(cd "$UH" && printf '{}' | CLAUDE_PLUGIN_ROOT="$REPO_ROOT" bash "$START" 2>/dev/null)"
+assert_eq "" "$co_out" "no coexistence advice in non-adopted project with its own session-start hook"
 
 # --- find_root must stop BEFORE $HOME: never treat ~/.claude as a project ---------
 FH="$SB/fakehome"

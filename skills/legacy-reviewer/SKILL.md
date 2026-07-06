@@ -32,7 +32,7 @@ Walks items in `_legacy/<migration-name>/` one at a time. Per-item options: Keep
 
 This is a bulk file-move over someone's existing repository. Treat it as destructive and gate it hard.
 
-1. **Pre-flight: require a clean tree.** Run `git status --porcelain`. If it prints anything (any staged or unstaged change), or the directory is not a git repo, ABORT and tell the user to commit or stash first. A clean tree is what makes the whole sweep one revertible diff — never sweep with a dirty tree.
+1. **Pre-flight: require a clean tree.** Run `git status --porcelain --untracked-files=no`. If it prints anything (any staged or unstaged change to TRACKED files), or the directory is not a git repo, ABORT and tell the user to commit or stash first. Untracked files do NOT block the sweep — they are often exactly the stray notes being swept (moved with plain `mv`, per step 5). A clean tree is what makes the whole sweep one revertible diff — never sweep with a dirty tree.
 
 2. **Scan for candidates, honoring the never-sweep whitelist.** List files and directories at the repo root (and obvious ad-hoc note locations) that are not part of the framework, the project's own source, or standard tooling. NEVER move anything matching this whitelist:
    - Framework dirs: `specs/`, `docs/`, `scratchpads/`, `.claude/`, `_legacy/`.

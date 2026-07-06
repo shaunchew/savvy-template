@@ -35,7 +35,7 @@ Not sure about the state of an installation? `/sf:doctor` (read-only). Want out?
 | Safety & lifecycle | `/sf:adopt`, `/sf:doctor`, `/sf:eject`, `/sf:upgrade` (legacy), `/sf:lint-framework` |
 | Exploration | `/sf:scratchpad` (isolated experiments), `/sf:legacy-review` (brownfield triage) |
 
-Plus deterministic hooks (session context loading, secret-scan blocking on every Bash call, doc line-budgets) and three canonical subagents (explorer, code-reviewer, parallel-runner). Hooks **only act in adopted projects** — installing the plugin does nothing to your other repos.
+Plus deterministic hooks (session context loading, secret-scan blocking on every Bash call, doc line-budgets) and three canonical subagents (explorer, code-reviewer, parallel-runner). Hooks **only act in adopted projects** — installing the plugin changes nothing in your other repos, with one deliberate exception: the secret-scan guard blocks credential-leaking Bash commands everywhere (it blocks secrets, and nothing else — it never touches files).
 
 ## The safety contract, concretely
 
@@ -45,9 +45,9 @@ Plus deterministic hooks (session context loading, secret-scan blocking on every
 | detach (legacy engine) | quarantined to `.claude/.savvy-detached-<ts>/`, never deleted; user hooks/files preserved | `tests/test-adopt-detach.sh` |
 | `/sf:eject` | edited files kept; unedited seeds quarantined; plugin disabled | `tests/test-doctor-eject-dryrun.sh` |
 | engine updates | out-of-tree plugin cache; version-gated `/plugin update` — cannot touch project files | plugin architecture |
-| hooks | no-op outside adopted projects; secret-scan blocks credentials in Bash commands | `tests/test-hooks-*.sh` |
+| hooks | no-op outside adopted projects (except secret-scan, which blocks credential leaks everywhere and touches nothing) | `tests/test-hooks-*.sh` |
 
-Run the suite yourself: `bash tests/run.sh` (needs only bash 3.2+, git, jq).
+Run the suite yourself from a git checkout: `bash tests/run.sh` (needs only bash 3.2+, git, jq).
 
 ## For existing projects with heavy history
 

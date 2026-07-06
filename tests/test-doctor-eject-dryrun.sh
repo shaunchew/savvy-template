@@ -42,6 +42,27 @@ assert_exit_code 0 $? "doctor exits 0 on healthy adopted project"
 after="$(cd "$AD" && find . -not -path './.git/*' | LC_ALL=C sort | hash_stdin)"
 assert_eq "$before" "$after" "doctor creates/removes nothing"
 
+# Plain project without .claude/ (pre-adoption first contact): full report, exit 0.
+PL="$SB/plain-app"
+make_git_project "$PL" "plain-app"
+d_plain="$(cd "$PL" && bash "$COPY/scripts/sf-doctor.sh" 2>&1)"
+assert_exit_code 0 $? "doctor exits 0 on plain project with no .claude/"
+case "$d_plain" in
+  *"problem(s)"*) pass ;;
+  *) fail "doctor must print its summary line on a plain project (report truncated?): $d_plain" ;;
+esac
+
+# Unreadable subdir must not kill the report.
+UD="$SB/unreadable-app"
+make_git_project "$UD" "unreadable-app"
+"$COPY/scripts/sf-adopt.sh" --project "$UD" >/dev/null 2>&1
+mkdir -p "$UD/vendor/locked"
+chmod a-rx "$UD/vendor/locked"
+( cd "$UD" && bash "$COPY/scripts/sf-doctor.sh" >/dev/null 2>&1 )
+rc=$?
+chmod u+rx "$UD/vendor/locked"
+assert_eq 0 "$rc" "doctor survives an unreadable subdir"
+
 # Broken project (invalid settings JSON) → exit 1:
 BR="$SB/broken-app"
 make_git_project "$BR" "broken-app"

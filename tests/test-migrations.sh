@@ -39,6 +39,18 @@ assert_file_absent "$EMPTY/.claude/.savvy-manifest.json" "v1.4.0.sh writes nothi
 # --- v1.4.0.sh is tag-pinned: no raw /main/ URLs (regression) ------------------
 assert_not_contains "$V140" "/main/" "v1.4.0.sh contains no raw /main/ URL"
 assert_contains "$V140" 'TAG="v1.4.0"' "v1.4.0.sh pins its remote fetches to the v1.4.0 tag"
+assert_contains "$V140" 'BASELINE_TAG="v1.5.0"' "baselines fetched from v1.5.0 (first tag carrying the full set)"
+# Every tag the stamp-mapping can emit must have its baseline IN THE TREE of the
+# baseline tag (tags are immutable — a mapped-but-absent baseline 404s forever).
+if git -C "$REPO_ROOT" rev-parse -q --verify refs/tags/v1.5.0 >/dev/null 2>&1; then
+  for t in v1.0.0 v1.2.0 v1.3.0 v1.4.0; do
+    if [ -n "$(git -C "$REPO_ROOT" ls-tree refs/tags/v1.5.0 "migrations/baselines/$t.json" 2>/dev/null)" ]; then
+      pass
+    else
+      fail "baseline $t.json missing from the v1.5.0 tag tree that v1.4.0.sh fetches from"
+    fi
+  done
+fi
 assert_contains "$V140" '$TAG/template' "v1.4.0.sh builds the template RAW URL from the pinned tag"
 assert_contains "$V140" "baseline_tag_for" "v1.4.0.sh maps coarse config.toml stamps to baseline tags"
 

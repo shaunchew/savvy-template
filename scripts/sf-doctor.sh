@@ -100,11 +100,17 @@ fi
 if [ -f "$PROJECT/.claude/.savvy-manifest.json" ]; then
   warn "legacy baseline manifest present (.claude/.savvy-manifest.json) — a legacy /sf:upgrade could re-install the in-tree engine; /sf:adopt quarantines it"
 fi
-new_count="$(find "$PROJECT" -name '*.savvy-new' -not -path '*/.git/*' 2>/dev/null | wc -l | tr -d ' ')"
+# `|| true` inside the substitutions: find exits nonzero on unreadable subdirs
+# (and a missing .claude/), and under set -e -o pipefail that would kill the
+# whole report mid-run with a false "problems found" exit code.
+new_count="$(find "$PROJECT" -name '*.savvy-new' -not -path '*/.git/*' 2>/dev/null | wc -l | tr -d ' ' || true)"
 if [ "${new_count:-0}" -gt 0 ]; then
   warn "$new_count unreconciled *.savvy-new file(s) from a past upgrade — review and delete them"
 fi
-q_count="$(find "$PROJECT/.claude" -maxdepth 1 -type d -name '.savvy-detached-*' 2>/dev/null | wc -l | tr -d ' ')"
+q_count=0
+if [ -d "$PROJECT/.claude" ]; then
+  q_count="$(find "$PROJECT/.claude" -maxdepth 1 -type d -name '.savvy-detached-*' 2>/dev/null | wc -l | tr -d ' ' || true)"
+fi
 if [ "${q_count:-0}" -gt 0 ]; then
   printf '  info  %s quarantine dir(s) under .claude/ from adopt/eject — review, then delete when satisfied\n' "$q_count"
 fi

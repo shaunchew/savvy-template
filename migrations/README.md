@@ -47,7 +47,7 @@ bash /tmp/migrate.sh
 | Version | What it fixes |
 |---|---|
 | `v1.0.1.sh` | Wraps `.claude/settings.json` `Stop` hook in the `{matcher, hooks: [...]}` envelope. Fixes Claude Code's `hooks › Stop › 0 › hooks: Expected array, but received undefined` validation error. |
-| `v1.3.0.sh` | Removes orphaned flat `.claude/commands/*.md` files left behind after commands moved into the namespaced `.claude/commands/sf/*.md` (invoked as `/sf:<name>`). Run after `copier update`. |
+| `v1.3.0.sh` | Removes orphaned flat `.claude/commands/*.md` files left behind after commands moved into the namespaced `.claude/commands/sf/*.md` (invoked as `/sf:<name>`). |
 | `v1.4.0.sh` | Bootstraps a pre-v1.4.0 project onto the manifest-driven upgrade system: installs `/sf:upgrade` (command + skill) and the ownership baseline manifest matching the project's current version (from `migrations/baselines/`). After this, use `/sf:upgrade` for all future updates. |
 
 ## Baselines (`migrations/baselines/`)
@@ -65,7 +65,7 @@ The `v1.4.0.sh` bootstrap installs the baseline matching a project's current ver
 | `1.3` | v1.3.0 | `v1.3.0.json` |
 | `1.4.0` | v1.4.0 | `v1.4.0.json` |
 
-An unrecognized stamp installs no baseline and `/sf:upgrade` runs in conservative mode. Because `v1.4.0.sh` fetches baselines from the pinned `v1.4.0` tag, that tag's `migrations/baselines/` tree must carry every baseline the mapping can name; a missing one degrades gracefully to conservative mode (safe, never overwrites).
+An unrecognized stamp installs no baseline and `/sf:upgrade` runs in conservative mode. `v1.4.0.sh` fetches baselines from the pinned `v1.5.0` tag — the first whose tree carries the full baseline set (`v1.0.0`/`v1.0.1`/`v1.4.0.json` were generated after the `v1.4.0` tag was cut, and tags are immutable). A missing baseline degrades gracefully to conservative mode (safe, never overwrites).
 
 ## Authoring a new migration
 

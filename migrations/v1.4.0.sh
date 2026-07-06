@@ -40,7 +40,11 @@ die() { say "error: $*"; exit 1; }
 # Pinned to the immutable release tag (see FROZEN ARTIFACT note above), never main.
 TAG="v1.4.0"
 RAW="https://raw.githubusercontent.com/shaunchew/savvy-template/$TAG/template"
-BASE_RAW="https://raw.githubusercontent.com/shaunchew/savvy-template/$TAG/migrations/baselines"
+# Baselines come from v1.5.0 — the first tag whose tree carries the FULL baseline
+# set (v1.0.0/v1.0.1/v1.4.0.json were generated after the v1.4.0 tag was cut;
+# tags are immutable, so $TAG itself can never serve them).
+BASELINE_TAG="v1.5.0"
+BASE_RAW="https://raw.githubusercontent.com/shaunchew/savvy-template/$BASELINE_TAG/migrations/baselines"
 
 [ -d ".claude" ] || die ".claude not found — run this from your project root."
 command -v curl >/dev/null 2>&1 || die "curl not installed."

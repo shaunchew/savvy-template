@@ -98,8 +98,9 @@ cleanup_sandbox() {
   esac
 }
 
-# repo_copy <dst> — pristine copy of the repo working tree (tracked files at
-# their current on-disk content) into <dst>, excluding .git and tests output.
+# repo_copy <dst> — copy of the repo working tree (tracked + untracked-but-not-
+# ignored files at their current on-disk content, via git ls-files) into <dst>.
+# Requires a git checkout — run.sh guards this.
 repo_copy() {
   mkdir -p "$1"
   # Tracked + untracked-but-not-ignored files, honoring .gitignore.

@@ -69,7 +69,13 @@ esac
 #     command differs from the in-tree project-relative one). Warn once, point to /sf:adopt.
 #     Harmless in legacy in-tree-only projects (no plugin → the in-tree hook is the only one;
 #     this branch keys off CLAUDE_PLUGIN_ROOT being set, which only the plugin invocation has).
+#     Gated on (a) an adopted framework project and (b) the in-tree hook actually being
+#     the savvy engine copy — a user's OWN session-start hook in a non-framework project
+#     must never trigger advice to run /sf:adopt (which would detach their hook).
 if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -f "$root/.claude/hooks/session-start.sh" ] \
+   && [ -f "$root/.claude/config.toml" ] \
+   && grep -q '^\[framework\]' "$root/.claude/config.toml" 2>/dev/null \
+   && grep -q 'savvy' "$root/.claude/hooks/session-start.sh" 2>/dev/null \
    && [ -f "$root/.claude/settings.json" ] \
    && grep -q '\.claude/hooks/session-start\.sh' "$root/.claude/settings.json" 2>/dev/null; then
   printf 'session-start.sh: ⚠ COEXISTENCE — the sf plugin and an in-tree engine are both active; hooks will DOUBLE-FIRE. Run /sf:adopt to detach the in-tree engine.\n'
@@ -139,10 +145,13 @@ version_stamp() {
   engine_ver="$(grep -E '"version"' "$pj" 2>/dev/null | head -1 | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/' || true)"
   [ -n "${engine_ver:-}" ] || return 0
 
-  # Stamp ONLY adopted framework projects (config.toml present). A bare .claude/
+  # Stamp ONLY projects that adopted the PLUGIN (sf@savvy enabled at project scope).
+  # A legacy in-tree project also has config.toml — stamping it would make the
+  # /sf:upgrade plugin-mode guard wrongly refuse to serve it. And a bare .claude/
   # dir is any Claude Code user's project — the plugin must never write into it.
   local stamp="$root/.claude/.savvy-engine-version"
-  if [ -f "$root/.claude/config.toml" ]; then
+  if [ -f "$root/.claude/config.toml" ] && [ -f "$root/.claude/settings.json" ] \
+     && grep -q '"sf@savvy"[[:space:]]*:[[:space:]]*true' "$root/.claude/settings.json" 2>/dev/null; then
     printf '%s\n' "$engine_ver" > "$stamp" 2>/dev/null || true
   fi
 

@@ -13,6 +13,17 @@ TESTS_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 command -v jq >/dev/null 2>&1 || { echo "tests: jq is required" >&2; exit 1; }
 command -v git >/dev/null 2>&1 || { echo "tests: git is required" >&2; exit 1; }
+git -C "$TESTS_DIR/.." rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+  || { echo "tests: must run from a git checkout (fixtures are built with git ls-files)" >&2; exit 1; }
+
+# Pin the interpreter: test bodies and the scripts they invoke must run under the
+# SAME bash that launched this runner ($BASH), not whatever `bash` PATH resolves
+# to — otherwise the macOS CI job's "system bash 3.2" pin silently stops at run.sh.
+SHIM_DIR="$(mktemp -d "${TMPDIR:-/tmp}/savvy-bash-shim.XXXXXX")"
+trap 'rm -rf -- "$SHIM_DIR"' EXIT
+ln -s "${BASH:-/bin/bash}" "$SHIM_DIR/bash"
+PATH="$SHIM_DIR:$PATH"
+export PATH
 
 filter="${1:-}"
 total=0; failed=0; failed_files=""

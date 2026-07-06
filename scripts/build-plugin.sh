@@ -58,13 +58,24 @@ T="$ROOT/template/.claude"
 mkdir -p "$T/commands/sf" "$T/skills/_framework" "$T/hooks" "$T/agents"
 
 # commands: flat root/commands/<cmd>.md -> template/.claude/commands/sf/<cmd>.md
+# EXCEPT plugin-lifecycle commands (adopt/doctor/eject): they invoke
+# ${CLAUDE_PLUGIN_ROOT}/scripts/* which does not exist in-tree — shipping them in
+# the legacy mirror would give legacy projects commands that cannot work (and the
+# legacy /sf:upgrade would then "helpfully" install them).
 rm -rf "$T/commands/sf"; mkdir -p "$T/commands/sf"
-cp "$ROOT"/commands/*.md "$T/commands/sf/"
+for f in "$ROOT"/commands/*.md; do
+  case "$(basename "$f")" in
+    adopt.md|doctor.md|eject.md) continue ;;
+  esac
+  cp "$f" "$T/commands/sf/"
+done
 
 # skills: root/skills/<n>/SKILL.md -> template/.claude/skills/_framework/<n>/SKILL.md
+# (project-adopt excluded — plugin-lifecycle, references ${CLAUDE_PLUGIN_ROOT}/scripts/*)
 rm -rf "$T/skills/_framework"; mkdir -p "$T/skills/_framework"
 for d in "$ROOT"/skills/*/; do
   n="$(basename "$d")"
+  [ "$n" = "project-adopt" ] && continue
   mkdir -p "$T/skills/_framework/$n"
   cp "$d/SKILL.md" "$T/skills/_framework/$n/SKILL.md"
 done

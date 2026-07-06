@@ -34,9 +34,9 @@ upgrade this managed file was locally modified (`current != baseline`), so the n
 version was set aside as `<path>.savvy-new` and the user's version was kept. The
 marker's `sha256` is the *kept* (current) hash at that time. The marker makes the
 conflict **sticky**: the file stays a CONFLICT on every later upgrade — it is NEVER
-eligible for a silent REFRESH — until either the on-disk file converges to the new
-`target` (upstream now matches what the user has) or the user explicitly accepts the
-resolution. Only then is the marker cleared. Without this marker a resolved-by-keeping
+eligible for a silent REFRESH — until the on-disk file comes to equal the new
+`target` (upstream converged, or the user chose to apply the new version). Keeping
+your own version never clears it. Without this marker a resolved-by-keeping
 file would look identical to an untouched file on the next run (`current == baseline`)
 and get silently overwritten — the exact data-loss bug this marker prevents.
 
@@ -59,7 +59,11 @@ detached and now ships as the `sf@savvy` plugin, and engine updates flow through
 
 Before anything else, detect plugin mode. The project is plugin-adopted if EITHER:
 - `.claude/settings.json` parses and has `enabledPlugins["sf@savvy"] == true`, OR
-- `.claude/.savvy-engine-version` exists.
+- `.claude/.savvy-engine-version` exists AND the in-tree engine is absent (no
+  `.claude/commands/sf/` and no `.claude/skills/_framework/` directory). A stray
+  stamp alone — e.g. left by an engine that ran while the plugin was merely
+  installed at user scope — does NOT make a legacy in-tree project plugin-adopted;
+  if the in-tree engine is still present, this skill MUST still serve it.
 
 If either is true, **STOP immediately**. Take NO file action whatsoever (no fetch, no
 classify, no manifest read/write). Print exactly this and end:
@@ -71,15 +75,15 @@ flow through:  /plugin update sf@savvy
 which this project no longer does. Nothing was changed.
 ```
 
-Only if the project is NOT plugin-adopted (no `enabledPlugins["sf@savvy"]`, no
-`.claude/.savvy-engine-version`) do you continue to step 1.
+Only if the project is NOT plugin-adopted by the definition above do you continue
+to step 1.
 
 ### 1. Locate the target release (what we're upgrading TO)
 
 Resolve a target manifest, in this order (prefer the earliest that succeeds):
 1. Explicit path argument → read `<arg>/.claude/.savvy-manifest.json` (or `<arg>`
    if it points straight at a manifest).
-2. Installed plugin → if a `savvy-framework` plugin is installed locally, read its
+2. Installed plugin → if the `sf` plugin (marketplace `savvy`) is installed locally, read its
    bundled `.savvy-manifest.json`.
 3. Remote **tagged release** → do NOT fetch from `.../main/template/...`. The
    framework is mid-rearchitecture and a later phase removes `template/` from `main`,
@@ -134,11 +138,15 @@ For each entry `{path, policy, target_hash}`:
     the conflict is *resolved* — clear the marker when writing the baseline (step 8).
   - baseline entry has **`conflict: true`** (and `current != target`) → **CONFLICT**
     (sticky). This is an unresolved prior conflict; it stays a conflict *regardless of
-    whether `current == baseline`*. Do NOT refresh. Only offer to clear it if the user
-    explicitly accepts the resolution; otherwise re-emit `<path>.savvy-new` (if `target`
-    differs from `current`) and keep the marker. **Never** treat a `conflict: true`
-    entry as REFRESH-eligible — doing so silently overwrites the file the user chose to
-    keep, which is the data-loss bug this rule exists to stop.
+    whether `current == baseline`*. Do NOT refresh. The marker clears ONLY when the
+    on-disk file comes to equal `target` — either upstream converged, or the user
+    chooses to APPLY THE NEW VERSION (copying target over the file is part of Apply,
+    step 8). **"I'll keep my version" NEVER clears the marker** — keeping yours is not
+    a resolution; re-record the kept hash WITH the marker so the next release still
+    surfaces the conflict. Re-emit `<path>.savvy-new` (if `target` differs from
+    `current`) and keep the marker. **Never** treat a `conflict: true` entry as
+    REFRESH-eligible — doing so silently overwrites the file the user chose to keep,
+    which is the data-loss bug this rule exists to stop.
   - `current == baseline` (no conflict marker, and `baseline != target`) → **REFRESH**
     (you never edited it; safe to replace with the new version).
   - `current != baseline` (or no baseline) → **CONFLICT** (you edited it, or we
@@ -245,10 +253,13 @@ In this order:
    upgrade `current == baseline` would classify as REFRESH and silently overwrite the
    user's file. The marker is what keeps it a CONFLICT until it is genuinely resolved.
 
-   **Clearing the marker** (a conflict that resolved this run): if a file that
-   previously carried `conflict: true` reached `current == target`, or the user
-   explicitly accepted the new version, write its `sha256` as the resolved on-disk hash
-   and OMIT the `conflict` key entirely. Do not carry a stale marker forward.
+   **Clearing the marker** (a conflict that resolved this run): the ONLY resolution
+   is the on-disk file equalling `target` — because upstream converged, or because the
+   user chose to apply the new version (then copying `target` over the file happens as
+   part of this run's Apply). In that case write its `sha256` (= the target hash) and
+   OMIT the `conflict` key. A user who keeps their own version has NOT resolved the
+   conflict — re-record the kept hash WITH `conflict: true` (see step 3). Do not carry
+   a stale marker forward once `current == target`.
 
    Example conflict entry:
    `{ "path": ".claude/hooks/format.sh", "policy": "managed", "sha256": "<kept-hash>", "conflict": true }`
