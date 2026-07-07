@@ -62,6 +62,35 @@ case "$ext" in
       fi
     fi
     ;;
+  go)
+    if command -v gofmt >/dev/null 2>&1; then
+      if gofmt -w "$file_path" >/dev/null 2>&1; then
+        printf 'format.sh: gofmt %s\n' "$file_path" >&2
+      fi
+    fi
+    ;;
+  rs)
+    # Plain rustfmt (no --edition) to stay compatible across toolchain versions.
+    if command -v rustfmt >/dev/null 2>&1; then
+      if rustfmt "$file_path" >/dev/null 2>&1; then
+        printf 'format.sh: rustfmt %s\n' "$file_path" >&2
+      fi
+    fi
+    ;;
+  sh)
+    if command -v shfmt >/dev/null 2>&1; then
+      if shfmt -w "$file_path" >/dev/null 2>&1; then
+        printf 'format.sh: shfmt %s\n' "$file_path" >&2
+      fi
+    fi
+    ;;
+  tf)
+    if command -v terraform >/dev/null 2>&1; then
+      if terraform fmt "$file_path" >/dev/null 2>&1; then
+        printf 'format.sh: terraform fmt %s\n' "$file_path" >&2
+      fi
+    fi
+    ;;
 esac
 
 exit 0

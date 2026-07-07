@@ -12,3 +12,4 @@ build/
 # Only the framework's own working handover at the repo root — NOT the template/ or
 # plugin skeleton/ seed copies, which must ship.
 /HANDOVER.md
+/LAUNCH.md

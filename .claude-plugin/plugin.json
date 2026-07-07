@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin.json",
   "name": "sf",
   "displayName": "Savvy Framework",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Self-policing AI-dev framework for solo developers. Spec-driven workflow, safe brownfield adoption (/sf:adopt with dry-run, /sf:doctor, /sf:eject), scratchpad-mode, legacy archival, quarantine-based detach — never deletes your files.",
   "author": {
     "name": "Shaun Chew",

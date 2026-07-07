@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.6.0] — 2026-07-07
+
+### Added
+- **`/sf:implement`** (`task-executor` skill) — checkpointed execution of a spec's `tasks.md`: one task = one commit, tests run after every task (halt on red, never barrel on), scope guard proposes `/sf:spec-revise` instead of improvising, `--continue`/`--task N` resume modes. Fills the plan→ship execution gap.
+- **`/sf:map`** (`project-map` skill) — brownfield as-built baseline: read-only survey written to `docs/as-built/` (index + ≤6 area docs, each ≤80 lines) with explicit KNOWN-UNKNOWNS instead of guesses; `--refresh` diffs and confirms before any overwrite. Ground truth for spec-driven work on existing codebases.
+- **`/sf:clarify`** and **`/sf:analyze`** — spec QA: clarify interrogates a spec before planning (≤5 questions, answers appended to a dated `## Clarifications` section, never rewrites prose); analyze cross-checks spec ↔ plan ↔ tasks ↔ constitution read-only and reports coverage gaps, orphan tasks, and contradictions.
+- **`scripts/sf-stack.sh`** — deterministic, read-only polyglot stack detection from manifests (Node incl. npm/yarn/pnpm/bun, Python incl. uv/poetry/pip, Rust, Go, Ruby, JVM, PHP, Elixir, .NET, Docker, CI), with plausible test/format commands per stack and a `--json` mode; used by `/sf:map` and `/sf:implement`, covered by `tests/test-stack.sh`.
+- **Polyglot format hook** — `format.sh` now also dispatches gofmt, rustfmt, shfmt, and terraform fmt (each only if already installed; all existing safety gates preserved).
+- README demo GIF + social preview image (`assets/`); `.editorconfig`, `.shellcheckrc`; CHANGELOG link references; repo description/topics/homepage set on GitHub.
+
 ## [1.5.0] — 2026-07-03
 
 ### Added
@@ -114,3 +124,13 @@ Gap-closing pass against the Claude Code large-codebase best practices blog post
 
 ### Added
 - Initial v1.0 skeleton: directory structure, `copier.yml`, `docs/PLAN.md`, stubbed skills/commands/hooks/integrations, `cli/savvy.zsh` stub.
+
+[Unreleased]: https://github.com/shaunchew/savvy-template/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/shaunchew/savvy-template/compare/v1.5.0...v1.6.0
+[1.5.0]: https://github.com/shaunchew/savvy-template/compare/v1.4.0...v1.5.0
+[1.4.0]: https://github.com/shaunchew/savvy-template/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/shaunchew/savvy-template/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/shaunchew/savvy-template/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/shaunchew/savvy-template/compare/v1.0.1...v1.1.0
+[1.0.1]: https://github.com/shaunchew/savvy-template/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/shaunchew/savvy-template/releases/tag/v1.0.0

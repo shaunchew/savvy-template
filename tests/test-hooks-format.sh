@@ -35,6 +35,23 @@ cp "$SB/adopted/node_modules/pkg/p.json" "$SB/vendored.before"
 run_hook "$SB/adopted/node_modules/pkg/p.json" >/dev/null
 assert_same_content "$SB/vendored.before" "$SB/adopted/node_modules/pkg/p.json" "node_modules file untouched"
 
+# Go (gofmt): adopted project, canonical file — hook exits 0 and leaves it
+# byte-identical whether or not gofmt is installed (a lone package clause is
+# already gofmt-clean; on CI gofmt is absent and the go branch is a no-op).
+printf 'package main\n' > "$SB/adopted/src/main.go"
+cp "$SB/adopted/src/main.go" "$SB/go.clean.before"
+assert_eq 0 "$(run_hook "$SB/adopted/src/main.go")" "hook exits 0 for .go in adopted project"
+assert_same_content "$SB/go.clean.before" "$SB/adopted/src/main.go" "canonical .go untouched in adopted project"
+
+# Go (gofmt): NON-adopted project, deliberately mis-formatted file — the adoption
+# gate must stop the hook from ever invoking gofmt, so the file stays identical
+# even on a machine where gofmt IS installed (the regression the gate prevents).
+mkdir -p "$SB/plain/src"
+printf 'package main\nfunc  main( ){}\n' > "$SB/plain/src/messy.go"
+cp "$SB/plain/src/messy.go" "$SB/go.messy.before"
+assert_eq 0 "$(run_hook "$SB/plain/src/messy.go")" "hook exits 0 for .go in non-adopted project"
+assert_same_content "$SB/go.messy.before" "$SB/plain/src/messy.go" "non-adopted .go untouched (gate holds)"
+
 # Resilience.
 printf '' | bash "$HOOK" >/dev/null 2>&1
 assert_exit_code 0 $? "empty stdin exits 0"

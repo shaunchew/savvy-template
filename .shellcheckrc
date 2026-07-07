@@ -1,0 +1,5 @@
+# shellcheck config for savvy-framework
+# SC1091: sourced files (tests/helpers.sh) are resolved at runtime, not lint time.
+disable=SC1091
+# Scripts must stay bash 3.2 compatible (macOS system bash) — see CONTRIBUTING.md.
+shell=bash

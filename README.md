@@ -8,6 +8,8 @@ A self-policing AI-dev framework for solo developers, shipped as a **Claude Code
 > **Adopting, upgrading, or removing the framework never deletes or overwrites your files.**
 > Everything is create-if-absent, additively merged, or quarantined — and every claim is enforced by tests in CI.
 
+![Demo: install, adopt with dry-run, doctor — all non-destructive](assets/demo.gif)
+
 ## Install (any project — new or existing)
 
 ```
@@ -30,10 +32,12 @@ Not sure about the state of an installation? `/sf:doctor` (read-only). Want out?
 
 | Area | Commands |
 |---|---|
-| Spec-driven flow | `/sf:spec` → `/sf:plan` → `/sf:tasks` → `/sf:ship` |
-| Project context | `/sf:intake`, `/sf:curate`, `/sf:handover`, `/sf:resume-handover`, `/sf:lesson` |
+| Spec-driven flow | `/sf:spec` → `/sf:clarify` → `/sf:plan` → `/sf:analyze` → `/sf:implement` → `/sf:ship` |
+| Project context | `/sf:intake`, `/sf:map` (brownfield as-built baseline), `/sf:curate`, `/sf:handover`, `/sf:resume-handover`, `/sf:lesson` |
 | Safety & lifecycle | `/sf:adopt`, `/sf:doctor`, `/sf:eject`, `/sf:upgrade` (legacy), `/sf:lint-framework` |
 | Exploration | `/sf:scratchpad` (isolated experiments), `/sf:legacy-review` (brownfield triage) |
+
+Polyglot by design: `scripts/sf-stack.sh` detects your stack (Node/Python/Rust/Go/Ruby/JVM/PHP/Elixir/.NET and more) deterministically from manifests — read-only, zero dependencies — and the format hook speaks prettier, black, gofmt, rustfmt, shfmt, and terraform fmt, each only when the tool already exists in your project.
 
 Plus deterministic hooks (session context loading, secret-scan blocking on every Bash call, doc line-budgets) and three canonical subagents (explorer, code-reviewer, parallel-runner). Hooks **only act in adopted projects** — installing the plugin changes nothing in your other repos, with one deliberate exception: the secret-scan guard blocks credential-leaking Bash commands everywhere (it blocks secrets, and nothing else — it never touches files).
 
