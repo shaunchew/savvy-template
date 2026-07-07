@@ -13,12 +13,22 @@ run_hook() { # $1=command-string -> echoes exit code
   echo $?
 }
 
+# Fake credentials are ASSEMBLED AT RUNTIME (prefix + body concatenation) so no
+# secret-shaped literal ever exists in this file — otherwise GitHub push
+# protection and every adopter's secret scanner flags the test suite itself.
+body="abcdefghijklmnopqrstuvwxyz123456"
+aws_key="AKIA$(printf 'IOSFODNN7EXAMPLE')"
+gh_pat="ghp_$(printf '0123456789%s12' "${body%??????}")"
+slack_tok="xoxb-$(printf '1234567890-abcdefghij')"
+stripe_key="sk_live_$(printf '%s' "${body%????????}")"
+openai_key="sk-$(printf '%s' "$body")"
+
 # --- must BLOCK (exit 2) --------------------------------------------------------
-assert_eq 2 "$(run_hook 'export AWS_KEY=AKIA_SCRUBBED')" "blocks AWS access key ID"
-assert_eq 2 "$(run_hook 'echo ghp_SCRUBBED > tok')" "blocks GitHub PAT"
-assert_eq 2 "$(run_hook 'curl -H "Authorization: Bearer xoxb-SCRUBBED"')" "blocks Slack token"
-assert_eq 2 "$(run_hook 'STRIPE=sk_live_SCRUBBED')" "blocks Stripe live key"
-assert_eq 2 "$(run_hook 'export OPENAI_API_KEY=sk-SCRUBBED')" "blocks sk- style key"
+assert_eq 2 "$(run_hook "export AWS_KEY=$aws_key")" "blocks AWS access key ID"
+assert_eq 2 "$(run_hook "echo $gh_pat > tok")" "blocks GitHub PAT"
+assert_eq 2 "$(run_hook "curl -H \"Authorization: Bearer $slack_tok\"")" "blocks Slack token"
+assert_eq 2 "$(run_hook "STRIPE=$stripe_key")" "blocks Stripe live key"
+assert_eq 2 "$(run_hook "export OPENAI_API_KEY=$openai_key")" "blocks sk- style key"
 assert_eq 2 "$(run_hook 'echo "-----BEGIN RSA PRIVATE KEY-----" > k.pem')" "blocks RSA private key header"
 assert_eq 2 "$(run_hook 'echo "-----BEGIN PRIVATE KEY-----" > k.pem')" "blocks bare private key header (optional type group)"
 assert_eq 2 "$(run_hook "password = 'hunter2hunter2hunter2'")" "blocks generic credential assignment"
@@ -41,7 +51,7 @@ printf '{"tool_input":{}}' | bash "$HOOK" >/dev/null 2>&1
 assert_exit_code 0 $? "missing command field exits 0"
 
 # Block message names the pattern on stderr (Claude shows this to the user).
-msg="$(printf '{"tool_input":{"command":"x=AKIA_SCRUBBED"}}' | bash "$HOOK" 2>&1 >/dev/null || true)"
+msg="$(printf '{"tool_input":{"command":"x=%s"}}' "$aws_key" | bash "$HOOK" 2>&1 >/dev/null || true)"
 case "$msg" in
   *"AWS access key"*) pass ;;
   *) fail "block message should name the matched pattern, got: $msg" ;;
