@@ -24,6 +24,15 @@ Then, inside the project you want to adopt:
 /sf:adopt               # do it (refuses a dirty git tree)
 ```
 
+One command covers every starting point:
+
+| Starting point | Command |
+|---|---|
+| Existing project (no framework) | `/sf:adopt` |
+| Empty project | `git init`, then `/sf:adopt` (a non-repo is refused so adoption stays revertible) |
+| Project on an older in-tree version | `/sf:adopt` — the old engine is quarantined, local edits survive |
+| Already plugin-mode, older engine | `/plugin update sf@savvy` — project files are never touched |
+
 `/sf:adopt` seeds context files (`AGENTS.md`, `constitution.md`, `ROADMAP.md`, …) **only where they don't exist**, additively merges safety rules into `.claude/settings.json` (yours are preserved, the original is backed up), and enables the plugin for this project only. If the project used an older in-tree version of the framework, its engine files are **moved to a quarantine dir, never deleted** — local edits survive.
 
 Not sure about the state of an installation? `/sf:doctor` (read-only). Want out? `/sf:eject` reverses adoption with the same guarantees and keeps every file you edited.
