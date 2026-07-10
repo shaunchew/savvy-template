@@ -1,0 +1,12 @@
+# Savvy framework — project-level config
+# Toggle integrations on/off here. Each integration also has its own
+# config.toml under .claude/integrations/<name>/ with credentials/settings.
+
+[framework]
+version = "1.6.0"
+variant = "solo"
+
+[integrations]
+notion = false
+telegram = false
+ram = false

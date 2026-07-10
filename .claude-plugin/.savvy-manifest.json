@@ -1,7 +1,7 @@
 {
   "framework": "savvy-framework",
   "version": "1.6.0",
-  "generated": "2026-07-07",
+  "generated": "2026-07-10",
   "files": [
     { "path": ".claude/agents/.gitkeep", "policy": "seeded", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
     { "path": ".claude/agents/code-reviewer.md", "policy": "managed", "sha256": "cda8c243183d970b6e52b8345854656a17754372981a1fc4080152342ad32d80" },
